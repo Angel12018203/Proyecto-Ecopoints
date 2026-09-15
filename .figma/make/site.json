@@ -1,0 +1,10 @@
+{
+  "description": "Facilitates recycling by connecting users to collection points, allowing material registration and earning rewards, making recycling engaging and accessible.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

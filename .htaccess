@@ -1,0 +1,23 @@
+# =====================================================================
+# CONFIGURACIÓN APACHE (.htaccess) — ECOPOINTS
+# =====================================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /Proyecto_Ecopoints/
+
+    # No reescribir archivos ni carpetas que existan físicamente (ej: public/css, public/js, public/img)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redirigir todo el tráfico restante hacia el Front Controller index.php
+    RewriteRule ^(.*)$ index.php?route=$1 [QSA,L]
+</IfModule>
+
+# Prevención de listado de directorios
+Options -Indexes
+
+# Protección de archivos sensibles de configuración
+<FilesMatch "(\.sql|\.env|\.git|composer\.json)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

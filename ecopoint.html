@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ecopoint — Plataforma de reciclaje y recompensas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ECOPOINT — Estilos CSS
+   ═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Poppins',sans-serif;background:#FAFCFA;color:#1A2E22;font-size:14px;}
+:root{
+  --green:#087A3D; --green-dark:#065C2D; --green-mid:#2E9B50;
+  --green-light:#EEF8EE; --gold:#F5B82E; --bg:#FAFCFA;
+  --surface:#ffffff; --border:#E0EBE4; --text:#1A2E22;
+  --muted:#4A6355; --label:#2D3A35;
+  --r:12px; --r-lg:16px; --r-xl:20px;
+  --shadow:0 2px 10px rgba(0,0,0,.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.14);
+}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#c1d8c9;border-radius:99px;}
+
+/* ── Layout ── */
+#app{display:flex;height:100vh;overflow:hidden;}
+
+/* ── Sidebar ── */
+#sidebar{
+  width:248px;display:flex;flex-direction:column;
+  background:var(--surface);border-right:1px solid var(--border);
+  flex-shrink:0;transition:width .3s ease;overflow:hidden;
+}
+#sidebar.collapsed{width:0;}
+.s-logo{display:flex;align-items:center;gap:10px;padding:18px 20px;border-bottom:1px solid var(--border);}
+.s-logo-text{font-size:1.15rem;font-weight:800;white-space:nowrap;}
+.s-logo-text .eco{color:var(--green);}
+.s-logo-text .pt{color:var(--text);}
+.s-nav{flex:1;padding:10px 0;overflow-y:auto;display:flex;flex-direction:column;gap:2px;}
+.ni{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 16px;margin:0 8px;border-radius:var(--r);
+  font-size:.82rem;font-weight:500;color:var(--muted);
+  cursor:pointer;white-space:nowrap;border:none;
+  background:transparent;width:calc(100% - 16px);
+  text-align:left;font-family:'Poppins',sans-serif;
+  transition:background .15s,color .15s;
+}
+.ni:hover{background:var(--green-light);color:var(--green);}
+.ni.active{background:var(--green);color:#fff;}
+.ni svg{width:17px;height:17px;flex-shrink:0;transition:stroke .15s;}
+.ni.active svg path,.ni.active svg circle,.ni.active svg rect{stroke:#fff!important;}
+.s-banner{margin:0 10px 10px;background:var(--green-light);border-radius:var(--r-lg);padding:12px;text-align:center;}
+.s-banner .bt{font-size:.68rem;font-weight:700;color:var(--green);}
+.s-banner .bs{font-size:.62rem;color:var(--muted);margin-top:1px;}
+.s-div{border:none;border-top:1px solid var(--border);margin:4px 0;}
+
+/* ── Main ── */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+
+/* ── Header ── */
+#hdr{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 22px;background:var(--surface);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+  position:relative;z-index:20;
+}
+.hsp{flex:1;}
+.pts-pill{
+  display:flex;align-items:center;gap:5px;
+  background:var(--green-light);color:var(--green);
+  font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:999px;
+}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:#F4F6F5;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);position:relative;transition:background .15s;
+}
+.icon-btn:hover{background:var(--green-light);color:var(--green);}
+.badge-dot{
+  position:absolute;top:-2px;right:-2px;
+  background:var(--green);color:#fff;
+  font-size:.55rem;font-weight:800;
+  width:15px;height:15px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+.prof-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 10px;border-radius:var(--r);
+  border:none;background:transparent;cursor:pointer;
+  transition:background .15s;font-family:'Poppins',sans-serif;
+}
+.prof-btn:hover{background:var(--green-light);}
+.prof-btn img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--border);}
+.prof-btn span{font-size:.82rem;font-weight:600;color:var(--label);white-space:nowrap;}
+
+/* Notif dropdown */
+.ndrop{
+  position:absolute;top:calc(100% + 8px);right:100px;
+  width:272px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lg);z-index:100;overflow:hidden;display:none;
+}
+.ndrop.open{display:block;}
+.ndrop-h{padding:11px 15px;font-weight:700;font-size:.82rem;border-bottom:1px solid var(--border);}
+.ndrop-item{display:flex;align-items:flex-start;gap:10px;padding:9px 15px;border-bottom:1px solid #F4F6F5;}
+.ndrop-item:last-child{border:none;}
+.ndrop-msg{font-size:.72rem;color:var(--text);line-height:1.4;}
+.ndrop-time{font-size:.62rem;color:var(--muted);margin-top:2px;}
+
+/* ── Page ── */
+#pc{flex:1;overflow-y:auto;}
+.pg{padding:22px;}
+.ptitle{font-size:1.15rem;font-weight:700;color:var(--text);}
+.psub{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.phdr{margin-bottom:18px;}
+
+/* ── Footer ── */
+#ftr{
+  background:#F0F5F2;border-top:1px solid var(--border);
+  padding:9px 22px;text-align:center;
+  font-size:.68rem;color:var(--muted);font-weight:500;flex-shrink:0;
+}
+
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);box-shadow:var(--shadow);}
+.cp{padding:18px;}
+
+/* ── Grid ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 18px;border-radius:var(--r);font-size:.8rem;
+  font-weight:600;font-family:'Poppins',sans-serif;
+  cursor:pointer;border:none;transition:background .15s,opacity .15s,transform .1s;
+}
+.btn:active{transform:scale(.97);}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.btn-p{background:var(--green);color:#fff;} .btn-p:hover{background:var(--green-dark);}
+.btn-o{background:transparent;color:var(--muted);border:1px solid var(--border);} .btn-o:hover{background:#F4F6F5;}
+.btn-full{width:100%;}
+.btn-sm{padding:5px 12px;font-size:.72rem;}
+.btn-red{background:transparent;color:#E53E3E;border:1px solid #FDDCDC;} .btn-red:hover{background:#FFF5F5;}
+
+/* ── Filter pills ── */
+.frow{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.fp{
+  padding:5px 13px;border-radius:999px;font-size:.72rem;
+  font-weight:600;border:1px solid var(--border);
+  background:var(--surface);color:var(--muted);cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.fp:hover{border-color:var(--green);color:var(--green);}
+.fp.act{background:var(--green);color:#fff;border-color:var(--green);}
+
+/* ── Badge ── */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:999px;font-size:.65rem;font-weight:600;}
+.bg{background:var(--green-light);color:var(--green);}
+.br{background:#FFF0F0;color:#E53E3E;}
+.bgr{background:#F4F6F5;color:var(--muted);}
+
+/* ── Progress ── */
+.pw{background:#E0EBE4;border-radius:999px;height:7px;overflow:hidden;}
+.pb{background:var(--green);height:100%;border-radius:999px;transition:width .5s;}
+
+/* ── Toggle ── */
+.tw{display:flex;align-items:center;justify-content:space-between;padding:7px 0;}
+.tgl{
+  position:relative;width:42px;height:22px;
+  background:#D0D8D4;border-radius:999px;
+  border:none;cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.tgl.on{background:var(--green);}
+.tgl::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:18px;height:18px;background:#fff;border-radius:50%;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;
+}
+.tgl.on::after{transform:translateX(20px);}
+
+/* ── Modal ── */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:14px;}
+.mov.open{display:flex;}
+.modal{background:var(--surface);border-radius:var(--r-xl);max-width:420px;width:100%;overflow:hidden;box-shadow:var(--shadow-lg);animation:su .2s ease;}
+@keyframes su{from{transform:translateY(16px);opacity:0;}to{transform:none;opacity:1;}}
+
+/* ── Profile panel ── */
+.ppanel{
+  position:fixed;top:0;right:0;width:290px;height:100%;
+  background:var(--surface);box-shadow:var(--shadow-lg);
+  z-index:300;display:none;flex-direction:column;overflow-y:auto;
+  animation:si .25s ease;
+}
+.ppanel.open{display:flex;}
+@keyframes si{from{transform:translateX(100%);}to{transform:none;}}
+.pp-hdr{background:linear-gradient(135deg,#087A3D,#2E9B50);padding:22px;color:#fff;}
+.pp-body{padding:14px;flex:1;}
+.pp-opt{
+  display:flex;align-items:center;gap:11px;padding:11px 14px;
+  border-radius:var(--r);font-size:.85rem;font-weight:500;
+  color:var(--label);cursor:pointer;border:none;background:transparent;
+  width:100%;text-align:left;font-family:'Poppins',sans-serif;transition:background .15s;
+}
+.pp-opt:hover{background:var(--green-light);}
+.pp-opt.dng{color:#E53E3E;} .pp-opt.dng:hover{background:#FFF5F5;}
+
+/* ══════════ INICIO ══════════ */
+.stat-hero{
+  background:var(--green);color:#fff;border-radius:var(--r-xl);
+  padding:20px;position:relative;overflow:hidden;
+}
+.stat-hero .dec{position:absolute;right:10px;top:10px;font-size:4.5rem;opacity:.1;pointer-events:none;}
+.enm{font-size:2.8rem;font-weight:800;line-height:1;}
+.elb{font-size:.6rem;font-weight:700;letter-spacing:.12em;opacity:.6;margin-top:3px;}
+.ac{
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  gap:7px;padding:14px 10px;border-radius:var(--r-lg);
+  border:2px solid var(--border);background:var(--surface);
+  cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.ac:hover{box-shadow:var(--shadow);}
+.ac.g:hover{border-color:var(--green);background:#F0FAF3;}
+.ac.b:hover{border-color:#2B7FD4;background:#F0F7FF;}
+.ac.y:hover{border-color:#D4992B;background:#FFFBF0;}
+.ai{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.at{font-size:.75rem;font-weight:700;color:var(--text);line-height:1.3;}
+.ad{font-size:.65rem;color:var(--muted);line-height:1.35;}
+.av-item{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #F4F6F5;}
+.av-item:last-child{border:none;}
+.av-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+
+/* ══════════ RECICLAR ══════════ */
+.stepper{display:flex;align-items:center;gap:0;margin-bottom:24px;}
+.sc{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;transition:all .2s;}
+.sc.done{background:var(--green);color:#fff;}
+.sc.act{background:var(--green);color:#fff;box-shadow:0 0 0 5px rgba(8,122,61,.15);}
+.sc.pnd{background:#E0EBE4;color:var(--muted);}
+.sl{flex:1;height:3px;border-radius:999px;transition:background .2s;}
+.sl.done{background:var(--green);}
+.sl.pnd{background:#E0EBE4;}
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.mc{
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:16px 8px;border-radius:var(--r-lg);border:2px solid var(--border);
+  background:var(--surface);cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.mc:hover{border-color:var(--green-mid);background:#F4FAF6;}
+.mc.sel{border-color:var(--green);background:var(--green-light);}
+.qrow{display:flex;align-items:center;gap:10px;}
+.qb{
+  width:38px;height:38px;border-radius:var(--r);border:1px solid var(--border);
+  background:var(--surface);font-size:1.1rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--muted);transition:background .15s;
+}
+.qb:hover{background:var(--green-light);}
+.qi{
+  flex:1;text-align:center;font-size:1.4rem;font-weight:700;
+  border:1px solid var(--border);border-radius:var(--r);padding:9px;
+  font-family:'Poppins',sans-serif;color:var(--text);outline:none;
+}
+.qi:focus{border-color:var(--green);}
+.ptoc{
+  display:flex;align-items:center;gap:12px;padding:12px;
+  border-radius:var(--r-lg);border:2px solid var(--border);
+  cursor:pointer;margin-bottom:9px;transition:all .15s;
+}
+.ptoc:hover:not([disabled]){border-color:var(--green-mid);background:#F4FAF6;}
+.ptoc.sel{border-color:var(--green);background:var(--green-light);}
+.ptoc[disabled]{opacity:.5;cursor:not-allowed;}
+.sbox{background:#F4F6F5;border-radius:var(--r-lg);padding:16px;}
+.sr{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #E8EDEA;}
+.sr:last-child{border:none;border-top:1px solid var(--border);margin-top:3px;padding-top:10px;}
+
+/* ══════════ MAPA ══════════ */
+.map-c{position:relative;width:100%;height:100%;min-height:280px;}
+.map-c svg{position:absolute;inset:0;width:100%;height:100%;}
+.map-info{position:absolute;bottom:10px;left:10px;right:10px;background:var(--surface);border-radius:var(--r-lg);padding:11px;box-shadow:var(--shadow);border:1px solid var(--border);}
+
+/* ══════════ BENEFICIOS ══════════ */
+.bcard{
+  border-radius:var(--r-xl);border:1px solid var(--border);
+  overflow:hidden;background:var(--surface);cursor:pointer;
+  transition:all .15s;
+}
+.bcard:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+.bcard img{width:100%;height:130px;object-fit:cover;display:block;}
+.biw{position:relative;}
+.bov{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);}
+.bott{position:absolute;bottom:10px;left:12px;color:#fff;}
+.bbcat{position:absolute;top:8px;right:8px;}
+.bbody{padding:10px 13px;}
+.code-box{border:2px dashed var(--green);background:var(--green-light);border-radius:var(--r-lg);padding:14px;text-align:center;margin:14px 0;}
+.code-val{font-size:1.4rem;font-weight:800;color:var(--green);letter-spacing:.15em;}
+
+/* ══════════ BALANCE ══════════ */
+.bal{
+  background:linear-gradient(135deg,var(--green),var(--green-mid));
+  color:#fff;border-radius:var(--r-xl);padding:24px;
+  position:relative;overflow:hidden;margin-bottom:18px;
+}
+.bal .dec{position:absolute;right:18px;top:18px;font-size:7rem;opacity:.08;pointer-events:none;}
+.bnum{font-size:3.2rem;font-weight:800;line-height:1;}
+
+/* ══════════ CHART ══════════ */
+.chbars{display:flex;align-items:flex-end;gap:9px;height:130px;}
+.cbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.cb{width:100%;border-radius:4px 4px 0 0;min-height:4px;}
+.cb:hover{opacity:.8;}
+.cl{font-size:.62rem;color:var(--muted);font-weight:500;}
+.cv{font-size:.62rem;color:var(--green);font-weight:700;}
+
+/* ══════════ EDUCACION ══════════ */
+.msel{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:18px;}
+.mbt{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 6px;border-radius:var(--r-lg);border:2px solid var(--border);
+  background:var(--surface);cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.mbt:hover{border-color:var(--green-mid);}
+.mbt.act{border-color:var(--green);}
+.edu-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.edu-s{display:flex;align-items:flex-start;gap:7px;background:#fff;border-radius:var(--r);padding:9px;}
+.edu-n{width:19px;height:19px;border-radius:50%;color:#fff;font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ══════════ CONFIG ══════════ */
+.csec{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px;margin-bottom:12px;}
+.csec h3{font-size:.85rem;font-weight:700;margin-bottom:12px;}
+
+/* ══════════ FAQ ══════════ */
+.faq{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:7px;}
+.faq-q{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 16px;cursor:pointer;font-size:.85rem;font-weight:600;
+  color:var(--text);border:none;background:transparent;width:100%;
+  text-align:left;font-family:'Poppins',sans-serif;transition:background .15s;
+}
+.faq-q:hover{background:#F4F6F5;}
+.faq-i{font-size:1rem;color:var(--green);transition:transform .2s;}
+.faq-i.op{transform:rotate(45deg);}
+.faq-a{display:none;padding:0 16px 12px;font-size:.78rem;color:var(--muted);line-height:1.6;border-top:1px solid var(--border);padding-top:10px;}
+.faq-a.op{display:block;}
+
+/* ══════════ PUNTOS ══════════ */
+.plcard{background:var(--surface);border:2px solid var(--border);border-radius:var(--r-xl);padding:14px;cursor:pointer;transition:all .15s;margin-bottom:9px;}
+.plcard:hover{border-color:var(--green-mid);}
+.plcard.sel{border-color:var(--green);}
+.mchip{background:var(--green-light);color:var(--green);font-size:.65rem;font-weight:500;padding:2px 7px;border-radius:999px;}
+
+/* ══════════ HISTORIAL ══════════ */
+.hcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:14px;display:flex;gap:12px;align-items:flex-start;margin-bottom:9px;}
+.himg{width:68px;height:52px;border-radius:var(--r);object-fit:cover;flex-shrink:0;}
+.hcode{background:var(--green-light);border:2px dashed rgba(8,122,61,.3);border-radius:8px;padding:3px 9px;display:inline-block;font-weight:800;font-size:.78rem;color:var(--green);letter-spacing:.1em;}
+
+/* ══════════ RESPONSIVE ══════════ */
+@media(max-width:900px){
+  #sidebar{width:0!important;position:fixed;z-index:50;height:100%;}
+  #sidebar.mob{width:248px!important;}
+  .g3{grid-template-columns:1fr 1fr;}
+  .g4{grid-template-columns:1fr 1fr;}
+  .mg{grid-template-columns:1fr 1fr;}
+  .msel{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:600px){
+  .g3,.g2{grid-template-columns:1fr;}
+  .pg{padding:13px;}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ═══════════ SIDEBAR ═══════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="s-logo">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="9" fill="#087A3D"/>
+        <path d="M15 5C8 9.5 8 17 8 17C8 20.866 11.134 24 15 24C18.866 24 22 20.866 22 17C22 9.5 15 5 15 5Z" fill="white" opacity=".92"/>
+        <path d="M15 9V22" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M11.5 14L15 10.5L18.5 14" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="s-logo-text"><span class="eco">Eco</span><span class="pt">point</span></span>
+    </div>
+    <nav class="s-nav">
+      <button class="ni active" data-page="inicio"><svg viewBox="0 0 20 20" fill="none"><path d="M3 9.5L10 3L17 9.5V17H13V13H7V17H3V9.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Inicio</button>
+      <button class="ni" data-page="reciclar"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5L12.5 6.5H14.5L11.5 1.5H8.5L5.5 6.5H7.5L10 2.5Z" fill="currentColor"/><path d="M5.5 6.5L3 11L5.5 15.5H8.5L6 11L8.5 6.5H5.5Z" fill="currentColor"/><path d="M14.5 6.5L17 11L14.5 15.5H11.5L14 11L11.5 6.5H14.5Z" fill="currentColor"/><path d="M8.5 15.5H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Reciclar</button>
+      <button class="ni" data-page="puntos"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2C7.239 2 5 4.239 5 7C5 11 10 18 10 18C10 18 15 11 15 7C15 4.239 12.761 2 10 2Z" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="7" r="2" fill="currentColor"/></svg>Puntos de reciclaje</button>
+      <button class="ni" data-page="beneficios"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M1 8H19V11H1V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M10 8V18" stroke="currentColor" stroke-width="1.5"/><path d="M10 8C10 8 8 6 8 4.5C8 3.5 8.9 3 10 3C11.1 3 12 3.5 12 4.5C12 6 10 8 10 8Z" stroke="currentColor" stroke-width="1.5"/></svg>Beneficios</button>
+      <button class="ni" data-page="ecopuntos"><svg viewBox="0 0 20 20" fill="none"><path d="M10 2L12.09 7.26L17.8 7.63L13.65 11.29L15.18 17L10 14.15L4.82 17L6.35 11.29L2.2 7.63L7.91 7.26L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Mis Ecopuntos</button>
+      <button class="ni" data-page="actividad"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M6 13L8 10L10 12L12 8L14 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Mi actividad</button>
+      <button class="ni" data-page="historial"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 6V10L13 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Historial de beneficios</button>
+      <button class="ni" data-page="educacion"><svg viewBox="0 0 20 20" fill="none"><path d="M10 3C10 3 4 7 4 13C4 16.314 6.686 19 10 19C13.314 19 16 16.314 16 13C16 7 10 3 10 3Z" stroke="currentColor" stroke-width="1.5"/><path d="M10 7V17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Educación ambiental</button>
+    </nav>
+    <div class="s-banner">
+      <div class="bt">Juntos cuidamos nuestro planeta</div>
+      <div class="bs">Cada acción cuenta 🌍</div>
+      <svg width="100%" height="50" viewBox="0 0 160 50" fill="none" style="margin-top:7px;">
+        <ellipse cx="80" cy="47" rx="68" ry="5" fill="#4A9B6A" opacity=".18"/>
+        <circle cx="52" cy="20" r="5" fill="#5BA87A"/>
+        <path d="M46 36C46 30 58 30 58 36V42H46V36Z" fill="#5BA87A"/>
+        <circle cx="70" cy="24" r="4" fill="#7EC49A"/>
+        <path d="M65 38C65 33 75 33 75 38V42H65V38Z" fill="#7EC49A"/>
+        <path d="M58 40L65 40" stroke="#5BA87A" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M115 44V30" stroke="#3E7A55" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="115" cy="22" r="9" fill="#5BA87A" opacity=".55"/>
+        <circle cx="109" cy="26" r="6" fill="#3E7A55" opacity=".45"/>
+        <circle cx="121" cy="24" r="7" fill="#4A9B6A" opacity=".45"/>
+      </svg>
+    </div>
+    <hr class="s-div">
+    <nav style="padding:5px 0;">
+      <button class="ni" data-page="config"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M10 2V4M10 16V18M2 10H4M16 10H18M4.22 4.22L5.64 5.64M14.36 14.36L15.78 15.78M15.78 4.22L14.36 5.64M5.64 14.36L4.22 15.78" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Configuración</button>
+      <button class="ni" data-page="ayuda"><svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 8C8 6.9 8.9 6 10 6C11.1 6 12 6.9 12 8C12 9 10 10 10 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Ayuda</button>
+    </nav>
+  </aside>
+
+  <!-- ═══════════ MAIN ════════════════════════════════════ -->
+  <div id="main">
+    <header id="hdr">
+      <button class="icon-btn" id="hamburger">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M3 5H17M3 10H17M3 15H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div id="hdr-logo" style="display:none;align-items:center;gap:7px;">
+        <svg width="24" height="24" viewBox="0 0 30 30" fill="none"><rect width="30" height="30" rx="9" fill="#087A3D"/><path d="M15 5C8 9.5 8 17 8 17C8 20.866 11.134 24 15 24C18.866 24 22 20.866 22 17C22 9.5 15 5 15 5Z" fill="white" opacity=".92"/><path d="M15 9V22" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round"/><path d="M11.5 14L15 10.5L18.5 14" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="font-size:1rem;font-weight:800;"><span style="color:#087A3D;">Eco</span><span style="color:#1A2E22;">point</span></span>
+      </div>
+      <div class="hsp"></div>
+      <div class="pts-pill">⭐ <span id="pts-disp">350 pts</span></div>
+      <div style="position:relative;">
+        <button class="icon-btn" id="notif-btn">
+          <svg width="17" height="17" viewBox="0 0 20 20" fill="none"><path d="M10 2C7.239 2 5 4.239 5 7V12L3 14V15H17V14L15 12V7C15 4.239 12.761 2 10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 15C8 16.105 8.895 17 10 17C11.105 17 12 16.105 12 15" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="badge-dot">3</span>
+        </button>
+        <div class="ndrop" id="ndrop">
+          <div class="ndrop-h">Notificaciones</div>
+          <div class="ndrop-item"><span style="font-size:1.1rem;">♻️</span><div><div class="ndrop-msg">¡Nuevo reciclaje registrado! +20 Ecopuntos</div><div class="ndrop-time">Hace 2h</div></div></div>
+          <div class="ndrop-item"><span style="font-size:1.1rem;">🎁</span><div><div class="ndrop-msg">Nuevo beneficio: Café Verde 2x1 disponible</div><div class="ndrop-time">Hace 5h</div></div></div>
+          <div class="ndrop-item"><span style="font-size:1.1rem;">⭐</span><div><div class="ndrop-msg">Estás cerca de tu próximo beneficio</div><div class="ndrop-time">Ayer</div></div></div>
+        </div>
+      </div>
+      <button class="prof-btn" id="prof-btn">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format" alt="Angel">
+        <span>¡Hola, Angel!</span>
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="#4A6355" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
+
+    <div id="pc"></div>
+
+    <footer id="ftr">🌿 Recicla hoy, gana mañana, transforma el planeta siempre. ♻️</footer>
+  </div>
+</div>
+
+<!-- ═══════════ PROFILE PANEL ══════════════════════════════ -->
+<div class="ppanel" id="ppanel">
+  <div class="pp-hdr">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <span style="font-weight:700;">Mi perfil</span>
+      <button id="close-pp" style="background:rgba(255,255,255,.2);border:none;cursor:pointer;width:26px;height:26px;border-radius:50%;color:#fff;font-size:.9rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160&h=160&fit=crop&auto=format" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.35);margin-bottom:9px;" alt="Angel David">
+      <div style="font-weight:700;font-size:1rem;">Angel David</div>
+      <div style="font-size:.75rem;opacity:.75;margin-top:2px;">angel.david@ecopoint.co</div>
+    </div>
+  </div>
+  <div class="pp-body">
+    <button class="pp-opt">✏️ Editar perfil</button>
+    <button class="pp-opt">🔑 Cambiar contraseña</button>
+    <button class="pp-opt">⚙️ Preferencias</button>
+    <hr style="border:none;border-top:1px solid #E0EBE4;margin:5px 0;">
+    <button class="pp-opt dng">🚪 Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ═══════════ BENEFIT MODAL ══════════════════════════════ -->
+<div class="mov" id="b-modal">
+  <div class="modal" id="b-modal-inner"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ECOPOINT — JavaScript
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Estado global ──────────────────────────────────────── */
+const S = {
+  page: 'inicio',
+  ecopuntos: 350,
+  sidebarOpen: true,
+  notifOpen: false,
+  perfilOpen: false,
+  activity: [
+    { material:'Plástico', kg:2,   unit:'kg', punto:'EcoPunto Centro', pts:20, date:'Hoy, 10:30 a.m.', icon:'♻️', color:'#3E9E6B' },
+    { material:'Cartón',   kg:1.5, unit:'kg', punto:'EcoPunto Norte',  pts:12, date:'Ayer, 4:15 p.m.', icon:'📦', color:'#C97D3A' },
+    { material:'Latas',    kg:1,   unit:'kg', punto:'EcoPunto Centro', pts:15, date:'12 may, 9:20 a.m.', icon:'🥫', color:'#6B8EA8' },
+  ],
+  redeemed: [
+    { brand:'Café Verde',  offer:'2x1 en bebidas', pts:400, date:'15 de agosto de 2026', code:'ECO-4827', used:false, img:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=140&fit=crop&auto=format' },
+    { brand:'Cine Planet', offer:'Entrada 2D',     pts:800, date:'2 de agosto de 2026',  code:'ECO-3912', used:true,  img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=200&h=140&fit=crop&auto=format' },
+  ],
+  rec: { step:1, mat:null, kg:2, punto:null, success:false, lastEarned:0 },
+  bFilter:'Todos', pFilter:'Todos', epFilter:'Todos',
+  eduActive:null, faqOpen:null,
+  cfg:{ push:true, email:true, rem:false, pub:true, share:true, dark:false, metric:true },
+  cfgLang:'Español', selPunto:'centro',
+};
+
+/* ── Datos ──────────────────────────────────────────────── */
+const MATS = [
+  {id:'plastico',label:'Plástico',icon:'🧴',pts:10,color:'#3E9E6B'},
+  {id:'carton',  label:'Cartón',  icon:'📦',pts:8, color:'#C97D3A'},
+  {id:'papel',   label:'Papel',   icon:'📄',pts:6, color:'#7E9BA8'},
+  {id:'latas',   label:'Latas',   icon:'🥫',pts:12,color:'#6B8EA8'},
+  {id:'vidrio',  label:'Vidrio',  icon:'🍾',pts:9, color:'#8B6BA8'},
+  {id:'otro',    label:'Otro',    icon:'♻️',pts:5, color:'#087A3D'},
+];
+const PUNTOS = [
+  {id:'centro',   name:'EcoPunto Centro',   dist:'500 m', open:true, addr:'Calle 45 #12-34',  mats:['Plástico','Cartón','Latas','Vidrio'],    hours:'Lun–Sáb 8:00–18:00'},
+  {id:'norte',    name:'EcoPunto Norte',    dist:'1.2 km',open:true, addr:'Av. Norte #89-10', mats:['Plástico','Papel','Cartón'],              hours:'Lun–Vie 9:00–17:00'},
+  {id:'sur',      name:'EcoPunto Sur',      dist:'2.1 km',open:false,addr:'Carrera 7 #23-45', mats:['Vidrio','Latas','Plástico'],              hours:'Mar–Sáb 10:00–16:00'},
+  {id:'occ',      name:'EcoPunto Occidente',dist:'3.4 km',open:true, addr:'Cl. 80 #50-20',    mats:['Papel','Cartón','Plástico','Latas'],      hours:'Lun–Dom 7:00–19:00'},
+];
+const BENS = [
+  {id:1,brand:'Café Verde',     offer:'2x1 en bebidas',    pts:400,cat:'Descuentos', desc:'Disfruta un 2x1 en cualquier bebida del menú de Café Verde.',img:'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&h=200&fit=crop&auto=format'},
+  {id:2,brand:'EcoMarket',      offer:'15% de descuento',  pts:600,cat:'Descuentos', desc:'15% de descuento en toda tu compra en EcoMarket.',          img:'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=200&fit=crop&auto=format'},
+  {id:3,brand:'Librería Natura',offer:'10% de descuento',  pts:500,cat:'Productos',  desc:'10% de descuento en libros, papelería y artículos de arte.', img:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=200&fit=crop&auto=format'},
+  {id:4,brand:'Cine Planet',    offer:'Entrada 2D',         pts:800,cat:'Experiencias',desc:'Una entrada para cualquier película 2D en Cine Planet.',   img:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&h=200&fit=crop&auto=format'},
+  {id:5,brand:'FarmaBio',       offer:'20% en suplementos', pts:450,cat:'Descuentos', desc:'20% de descuento en suplementos naturales y vitaminas.',    img:'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=200&fit=crop&auto=format'},
+  {id:6,brand:'Yoga Verde',     offer:'Clase gratis',       pts:350,cat:'Experiencias',desc:'Una clase de yoga gratis en Yoga Verde.',                  img:'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=200&fit=crop&auto=format'},
+];
+const EDUS = [
+  {id:'plastico',icon:'🧴',title:'Plástico',color:'#3E9E6B',bg:'#EEF8EE',steps:['Enjuaga los envases antes de reciclar.','Retira tapas y etiquetas.','Aplana botellas para ahorrar espacio.','Busca el símbolo ♻ en el envase.'],fact:'Reciclar 1 kg de plástico ahorra hasta 2 kg de CO₂.'},
+  {id:'carton', icon:'📦',title:'Cartón',  color:'#C97D3A',bg:'#FFF4EB',steps:['Dobla las cajas para ocupar menos espacio.','Retira cintas y grapas.','Asegúrate de que esté seco y limpio.','Separa el cartón corrugado del fino.'],fact:'Una tonelada de cartón reciclado salva 17 árboles.'},
+  {id:'vidrio', icon:'🍾',title:'Vidrio',  color:'#8B6BA8',bg:'#F4EEFF',steps:['Enjuaga bien los envases.','Retira tapas metálicas o plásticas.','No incluyas vidrio roto.','Separa por color si el punto lo requiere.'],fact:'El vidrio puede reciclarse infinitas veces.'},
+  {id:'latas',  icon:'🥫',title:'Latas',   color:'#6B8EA8',bg:'#EAF4FA',steps:['Enjuaga y aplana las latas.','Incluye latas de alimentos y bebidas.','Retira etiquetas si es posible.','No incluyas aerosoles a presión.'],fact:'Reciclar aluminio usa 95% menos energía.'},
+  {id:'papel',  icon:'📄',title:'Papel',   color:'#7E9BA8',bg:'#EEF5FA',steps:['Evita papel encerado o manchado.','Retira clips y grapas.','Periódicos y revistas son bienvenidos.','El papel mojado pierde calidad.'],fact:'Reciclar papel reduce el consumo de agua en 60%.'},
+];
+const FAQS_D = [
+  {q:'¿Cómo gano Ecopuntos?',a:'Ganas Ecopuntos cada vez que registras un reciclaje. El número depende del material y cantidad. Por ejemplo, 1 kg de plástico da ~10 puntos.'},
+  {q:'¿Dónde puedo reciclar?',a:'Encuentra los puntos más cercanos en "Puntos de reciclaje". El mapa muestra EcoPuntos activos con horarios y materiales aceptados.'},
+  {q:'¿Cómo canjeo mis puntos?',a:'Ve a "Beneficios", selecciona uno y haz clic en "Canjear beneficio". Recibirás un código único para usar en el establecimiento.'},
+  {q:'¿Qué materiales puedo reciclar?',a:'Plástico, Cartón, Papel, Latas, Vidrio y más. Cada punto acepta distintos materiales; verifícalo antes de ir.'},
+  {q:'¿Mis Ecopuntos vencen?',a:'Actualmente los Ecopuntos no vencen. Te recomendamos canjarlos regularmente para aprovechar las mejores ofertas.'},
+  {q:'¿Cómo veo mi impacto ambiental?',a:'En "Mi actividad" encuentras kg reciclados, CO₂ evitado, número de reciclajes y estadísticas de tu contribución.'},
+];
+const MONTHLY = [{m:'Ene',v:8},{m:'Feb',v:12},{m:'Mar',v:18},{m:'Abr',v:25},{m:'May',v:22},{m:'Jun',v:30},{m:'Jul',v:28},{m:'Ago',v:38}];
+const MICO = {Plástico:'🧴',Cartón:'📦',Latas:'🥫',Vidrio:'🍾',Papel:'📄'};
+const MCOL = {Plástico:'#3E9E6B',Cartón:'#C97D3A',Latas:'#6B8EA8',Papel:'#7E9BA8',Vidrio:'#8B6BA8',Otro:'#087A3D'};
+
+/* ── Helpers ────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const earned = () => { const m=MATS.find(x=>x.id===S.rec.mat); return m ? Math.round(S.rec.kg*m.pts) : 0; };
+const dot = open => `<span style="width:8px;height:8px;border-radius:50%;background:${open?'#3CB96A':'#E53E3E'};display:inline-block;margin-right:3px;"></span><span style="color:${open?'#3CB96A':'#E53E3E'};font-size:.72rem;font-weight:600;">${open?'Abierto':'Cerrado'}</span>`;
+const mapSVG = () => `<svg viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+  <rect width="320" height="240" fill="#E8EFE4"/>
+  ${[40,80,120,160,200].map(y=>`<rect x="0" y="${y}" width="320" height="7" fill="#F0F5EC" opacity=".9"/>`).join('')}
+  ${[50,110,170,230,290].map(x=>`<rect x="${x}" y="0" width="7" height="240" fill="#F0F5EC" opacity=".9"/>`).join('')}
+  ${[[10,10,32,22],[60,10,44,22],[120,10,44,22],[180,10,44,22],[240,10,52,22],[10,50,32,22],[60,50,44,22],[120,50,44,22],[180,50,44,22],[10,90,32,22],[60,90,44,22],[120,90,44,22],[180,90,44,22],[10,130,32,22],[60,130,44,22],[120,130,44,22],[180,130,44,22],[10,170,32,22],[60,170,44,22]].map(([x,y,w,h],i)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${i%2?'#C8D8C8':'#D4E0D4'}"/>`).join('')}
+  <g transform="translate(85,65)"><circle cx="0" cy="0" r="13" fill="#087A3D" opacity=".14"/><path d="M0-10C-4-10-7-7-7-3C-7 3 0 11 0 11C0 11 7 3 7-3C7-7 4-10 0-10Z" fill="#087A3D"/><circle cx="0" cy="-3" r="2.8" fill="white"/></g>
+  <g transform="translate(165,55)"><circle cx="0" cy="0" r="9" fill="#2E9B50" opacity=".14"/><path d="M0-8C-3-8-5.5-5.5-5.5-2C-5.5 2.5 0 9 0 9C0 9 5.5 2.5 5.5-2C5.5-5.5 3-8 0-8Z" fill="#2E9B50"/><circle cx="0" cy="-2" r="2.2" fill="white"/></g>
+  <g transform="translate(230,100)"><circle cx="0" cy="0" r="9" fill="#2E9B50" opacity=".14"/><path d="M0-8C-3-8-5.5-5.5-5.5-2C-5.5 2.5 0 9 0 9C0 9 5.5 2.5 5.5-2C5.5-5.5 3-8 0-8Z" fill="#2E9B50"/><circle cx="0" cy="-2" r="2.2" fill="white"/></g>
+  <g transform="translate(55,145)"><circle cx="0" cy="0" r="9" fill="#2E9B50" opacity=".14"/><path d="M0-8C-3-8-5.5-5.5-5.5-2C-5.5 2.5 0 9 0 9C0 9 5.5 2.5 5.5-2C5.5-5.5 3-8 0-8Z" fill="#2E9B50"/><circle cx="0" cy="-2" r="2.2" fill="white"/></g>
+</svg>`;
+
+/* ── Render ─────────────────────────────────────────────── */
+function render() {
+  $('pts-disp').textContent = S.ecopuntos + ' pts';
+  $('hdr-logo').style.display = S.sidebarOpen ? 'none' : 'flex';
+  document.querySelectorAll('.ni').forEach(b => b.classList.toggle('active', b.dataset.page === S.page));
+  $('pc').innerHTML = PAGES[S.page]();
+  bind();
+}
+
+/* ── Páginas ────────────────────────────────────────────── */
+const PAGES = {
+
+/* ════ INICIO ═══════════════════════════════════════════ */
+inicio() {
+  const pct = Math.min((S.ecopuntos/500)*100,100), falta = Math.max(500-S.ecopuntos,0);
+  const kg = S.activity.reduce((s,a)=>s+a.kg,0), co2 = +(kg*.65).toFixed(1);
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">¡Bienvenido de nuevo! 👋</div><div class="psub">Sigue reciclando y acumulando Ecopuntos.</div></div>
+  <div class="g3" style="margin-bottom:13px;">
+    <div class="stat-hero">
+      <div class="dec">🌿</div>
+      <div style="font-size:.72rem;opacity:.75;margin-bottom:9px;">Tus Ecopuntos</div>
+      <div style="display:flex;align-items:center;gap:9px;"><span style="font-size:1.9rem;">⭐</span><span class="enm">${S.ecopuntos}</span></div>
+      <div class="elb">ECOPUNTOS</div>
+    </div>
+    <div class="card cp">
+      <div style="font-size:.68rem;font-weight:600;color:#087A3D;margin-bottom:10px;">🎁 Próximo beneficio</div>
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:10px;">
+        <div style="width:38px;height:38px;background:#EEF8EE;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🎁</div>
+        <div><div style="font-weight:700;font-size:.88rem;">10% de descuento</div><div style="font-size:.68rem;color:#4A6355;">en tiendas aliadas</div></div>
+      </div>
+      <div class="pw" style="margin-bottom:5px;"><div class="pb" style="width:${pct}%;"></div></div>
+      <div style="font-size:.66rem;color:#4A6355;">${S.ecopuntos} / 500 puntos</div>
+      <div style="font-size:.68rem;font-weight:600;color:#087A3D;margin-top:3px;">${falta>0?'¡Te faltan '+falta+' puntos!':'¡Ya puedes canjearlo! 🎉'}</div>
+    </div>
+    <div class="card cp">
+      <div style="font-size:.68rem;font-weight:600;color:#087A3D;margin-bottom:10px;">🌿 Impacto ambiental</div>
+      <div style="font-size:.82rem;font-weight:500;margin-bottom:12px;">Gracias por hacer<br>la diferencia</div>
+      <div style="display:flex;gap:12px;">
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div style="width:30px;height:30px;background:#EEF8EE;border-radius:7px;display:flex;align-items:center;justify-content:center;">🌿</div>
+          <div><div style="font-weight:700;">${kg} kg</div><div style="font-size:.62rem;color:#4A6355;">Reciclados</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:7px;">
+          <div style="width:30px;height:30px;background:#F0F0F5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#4A4A6A;">CO₂</div>
+          <div><div style="font-weight:700;">${co2} kg</div><div style="font-size:.62rem;color:#4A6355;">CO₂ evitado</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:13px;">
+    <div class="card cp">
+      <div style="font-weight:700;font-size:.85rem;margin-bottom:12px;">¿Qué quieres hacer hoy?</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;">
+        <button class="ac g" data-nav="reciclar"><div class="ai" style="background:#EEF8EE;">♻️</div><div class="at">Registrar reciclaje</div><div class="ad">Registra los materiales reciclados</div><span style="color:#087A3D;font-size:.85rem;">→</span></button>
+        <button class="ac b" data-nav="puntos"><div class="ai" style="background:#E8F2FF;">📍</div><div class="at">Encontrar punto cercano</div><div class="ad">Ubica puntos cerca de ti</div><span style="color:#2B7FD4;font-size:.85rem;">→</span></button>
+        <button class="ac y" data-nav="beneficios"><div class="ai" style="background:#FFF3D0;">🎁</div><div class="at">Ver beneficios</div><div class="ad">Canjea tus Ecopuntos</div><span style="color:#D4992B;font-size:.85rem;">→</span></button>
+      </div>
+    </div>
+    <div class="card" style="overflow:hidden;display:flex;min-height:200px;">
+      <div style="flex:1;position:relative;">${mapSVG()}
+        <div style="position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;">
+          <span style="font-size:.68rem;font-weight:700;background:rgba(255,255,255,.93);padding:4px 9px;border-radius:7px;">Punto más cercano</span>
+          <button class="btn btn-sm" style="background:rgba(255,255,255,.93);color:#087A3D;" data-nav="puntos">Ver todos</button>
+        </div>
+      </div>
+      <div style="width:158px;padding:12px;border-left:1px solid #E0EBE4;display:flex;flex-direction:column;gap:9px;">
+        <div><div style="font-weight:700;font-size:.85rem;">EcoPunto Centro</div><div style="display:flex;align-items:center;margin-top:3px;">${dot(true)}</div></div>
+        <div style="font-size:.68rem;color:#4A6355;">📍 A 500 metros</div>
+        <div style="display:flex;gap:3px;">${['🧴','📦','🥫','🍾'].map(e=>`<div style="width:26px;height:26px;background:#EEF8EE;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;">${e}</div>`).join('')}</div>
+        <button class="btn btn-p btn-sm btn-full" data-nav="puntos" style="margin-top:auto;">📍 Cómo llegar</button>
+      </div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card cp">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:.85rem;">Actividad reciente</div>
+        <button class="btn btn-sm" style="background:none;color:#087A3D;" data-nav="actividad">Ver todo</button>
+      </div>
+      ${S.activity.slice(0,3).map(a=>`<div class="av-item">
+        <div class="av-ic" style="background:${a.color}20;">${a.icon}</div>
+        <div style="flex:1;min-width:0;"><div style="font-size:.75rem;font-weight:600;">Reciclaje de ${a.material}</div><div style="font-size:.65rem;color:#4A6355;">${a.kg}${a.unit} · ${a.punto}</div></div>
+        <div style="text-align:right;"><div style="font-size:.75rem;font-weight:700;color:#087A3D;">+${a.pts} pts</div><div style="font-size:.62rem;color:#4A6355;">${a.date}</div></div>
+      </div>`).join('')}
+      <button class="btn btn-o btn-full" style="margin-top:12px;" data-nav="actividad">Ver todo mi historial →</button>
+    </div>
+    <div class="card cp">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-weight:700;font-size:.85rem;">Beneficios destacados</div>
+        <button class="btn btn-sm" style="background:none;color:#087A3D;" data-nav="beneficios">Ver todos</button>
+      </div>
+      <div class="g4">
+        ${BENS.slice(0,4).map(b=>`<div class="bcard" data-nav="beneficios" style="cursor:pointer;">
+          <img src="${b.img}" alt="${b.brand}" loading="lazy" style="width:100%;height:70px;object-fit:cover;">
+          <div style="padding:7px 9px;"><div style="font-size:.68rem;font-weight:700;">${b.offer}</div><div style="font-size:.62rem;color:#4A6355;">⭐ ${b.pts} pts</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  </div>`;
+},
+
+/* ════ RECICLAR ══════════════════════════════════════════ */
+reciclar() {
+  if (S.rec.success) return this._rSuccess();
+  const steps = ['Material','Cantidad','Punto','Confirmar'];
+  const sp = `<div class="stepper">
+    ${[1,2,3,4].map((n,i)=>`<div class="sc ${S.rec.step>n?'done':S.rec.step===n?'act':'pnd'}">${S.rec.step>n?'✓':n}</div>${i<3?`<div class="sl ${S.rec.step>n?'done':'pnd'}"></div>`:''}`).join('')}
+    <div style="display:flex;gap:16px;margin-left:12px;">
+      ${steps.map((l,i)=>`<span style="font-size:.68rem;font-weight:${S.rec.step===i+1?700:500};color:${S.rec.step===i+1?'#087A3D':'#4A6355'};">${l}</span>`).join('')}
+    </div>
+  </div>`;
+  const body = [null, this._s1, this._s2, this._s3, this._s4][S.rec.step].call(this);
+  return `<div class="pg"><div class="phdr"><div class="ptitle">Registrar reciclaje</div><div class="psub">Registra tus materiales y gana Ecopuntos.</div></div>${sp}<div style="max-width:540px;">${body}</div></div>`;
+},
+_s1() {
+  return `<div class="card cp">
+  <div style="font-weight:700;margin-bottom:4px;">Paso 1 — Seleccionar material</div>
+  <div style="font-size:.75rem;color:#4A6355;margin-bottom:14px;">¿Qué vas a reciclar hoy?</div>
+  <div class="mg">${MATS.map(m=>`<button class="mc ${S.rec.mat===m.id?'sel':''}" data-mat="${m.id}"><span style="font-size:1.9rem;">${m.icon}</span><span style="font-size:.78rem;font-weight:600;">${m.label}</span><span style="font-size:.65rem;color:#087A3D;">~${m.pts} pts/kg</span></button>`).join('')}</div>
+  <button class="btn btn-p btn-full" style="margin-top:16px;" id="s1n" ${!S.rec.mat?'disabled':''}>Continuar →</button>
+  </div>`;
+},
+_s2() {
+  const m = MATS.find(x=>x.id===S.rec.mat);
+  return `<div class="card cp">
+  <div style="font-weight:700;margin-bottom:4px;">Paso 2 — Registrar cantidad</div>
+  <div style="font-size:.75rem;color:#4A6355;margin-bottom:14px;">¿Cuánto material vas a reciclar?</div>
+  <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px;">
+    <div style="width:40px;height:40px;background:#EEF8EE;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">${m.icon}</div>
+    <span style="font-weight:600;">${m.label}</span>
+  </div>
+  <div class="qrow" style="margin-bottom:14px;">
+    <button class="qb" id="qm">−</button>
+    <input class="qi" id="qv" type="number" min="0.5" step="0.5" value="${S.rec.kg}">
+    <span style="font-weight:600;color:#4A6355;">kg</span>
+    <button class="qb" id="qp">+</button>
+  </div>
+  <div style="background:#EEF8EE;border-radius:11px;padding:13px;text-align:center;margin-bottom:16px;">
+    <div style="font-size:.68rem;color:#4A6355;margin-bottom:3px;">Ecopuntos estimados</div>
+    <div style="font-size:1.5rem;font-weight:800;color:#087A3D;" id="ep">+${earned()} Ecopuntos</div>
+  </div>
+  <div style="display:flex;gap:9px;"><button class="btn btn-o" style="flex:1;" id="sb">← Atrás</button><button class="btn btn-p" style="flex:1;" id="s2n">Continuar →</button></div>
+  </div>`;
+},
+_s3() {
+  return `<div class="card cp">
+  <div style="font-weight:700;margin-bottom:4px;">Paso 3 — Seleccionar punto de reciclaje</div>
+  <div style="font-size:.75rem;color:#4A6355;margin-bottom:14px;">Elige dónde vas a entregar tus materiales.</div>
+  ${PUNTOS.map(p=>`<div class="ptoc ${!p.open?'':''}${S.rec.punto===p.id&&p.open?' sel':''}" data-pto="${p.id}" ${!p.open?'disabled':''}>
+    <span style="font-size:1.4rem;">📍</span>
+    <div style="flex:1;"><div style="font-weight:600;font-size:.85rem;">${p.name}</div><div style="font-size:.68rem;color:#4A6355;">${p.dist}</div></div>
+    <div style="display:flex;align-items:center;">${dot(p.open)}</div>
+    ${S.rec.punto===p.id&&p.open?'<span style="color:#087A3D;font-size:1rem;">✓</span>':''}
+  </div>`).join('')}
+  <div style="display:flex;gap:9px;margin-top:6px;"><button class="btn btn-o" style="flex:1;" id="sb">← Atrás</button><button class="btn btn-p" style="flex:1;" id="s3n" ${!S.rec.punto?'disabled':''}>Continuar →</button></div>
+  </div>`;
+},
+_s4() {
+  const m = MATS.find(x=>x.id===S.rec.mat), p = PUNTOS.find(x=>x.id===S.rec.punto), e=earned();
+  return `<div class="card cp">
+  <div style="font-weight:700;margin-bottom:4px;">Paso 4 — Confirmar</div>
+  <div style="font-size:.75rem;color:#4A6355;margin-bottom:14px;">Revisa el resumen de tu reciclaje.</div>
+  <div class="sbox" style="margin-bottom:16px;">
+    ${[['Material',`${m.icon} ${m.label}`],['Cantidad',`${S.rec.kg} kg`],['Punto',p.name]].map(([k,v])=>`<div class="sr"><span style="font-size:.82rem;color:#4A6355;">${k}</span><span style="font-size:.82rem;font-weight:600;">${v}</span></div>`).join('')}
+    <div class="sr"><span style="font-size:.82rem;font-weight:700;color:#4A6355;">Ecopuntos obtenidos</span><span style="font-size:1.1rem;font-weight:800;color:#087A3D;">+${e}</span></div>
+  </div>
+  <div style="display:flex;gap:9px;"><button class="btn btn-o" style="flex:1;" id="sb">← Atrás</button><button class="btn btn-p" style="flex:1;" id="cfm">✅ Confirmar reciclaje</button></div>
+  </div>`;
+},
+_rSuccess() {
+  const m=MATS.find(x=>x.id===S.rec.mat), p=PUNTOS.find(x=>x.id===S.rec.punto);
+  return `<div class="pg" style="display:flex;align-items:center;justify-content:center;min-height:60vh;">
+  <div class="card cp" style="text-align:center;max-width:320px;">
+    <div style="font-size:3.5rem;margin-bottom:13px;">🎉</div>
+    <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:7px;">¡Reciclaje registrado!</h2>
+    <div style="font-size:2.8rem;font-weight:800;color:#087A3D;">+${S.rec.lastEarned}</div>
+    <div style="font-size:.8rem;color:#4A6355;margin-bottom:5px;">Ecopuntos ganados</div>
+    <div style="font-size:.78rem;font-weight:600;margin-bottom:20px;line-height:1.7;">${m.icon} ${m.label} · ${S.rec.kg} kg<br>${p.name}</div>
+    <button class="btn btn-p btn-full" style="margin-bottom:9px;" id="ri">Volver al inicio</button>
+    <button class="btn btn-o btn-full" id="ro">Registrar otro reciclaje</button>
+  </div></div>`;
+},
+
+/* ════ PUNTOS DE RECICLAJE ══════════════════════════════ */
+puntos() {
+  const matF=['Todos','Plástico','Cartón','Vidrio','Latas','Papel'];
+  const vis = S.pFilter==='Todos' ? PUNTOS : PUNTOS.filter(p=>p.mats.includes(S.pFilter));
+  const sel = PUNTOS.find(p=>p.id===S.selPunto)||PUNTOS[0];
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Puntos de reciclaje</div><div class="psub">Encuentra un punto cercano para entregar tus materiales.</div></div>
+  <div class="frow">${matF.map(f=>`<button class="fp${S.pFilter===f?' act':''}" data-pf="${f}">${f!=='Todos'?(MICO[f]||'')+' ':''}${f}</button>`).join('')}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;height:510px;">
+    <div class="card" style="overflow:hidden;position:relative;">
+      ${mapSVG()}
+      <div style="position:absolute;top:9px;left:9px;background:rgba(255,255,255,.93);padding:5px 10px;border-radius:8px;font-size:.68rem;font-weight:700;">${vis.length} puntos encontrados</div>
+      <div class="map-info">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;"><span style="font-weight:700;font-size:.85rem;">${sel.name}</span><span>${dot(sel.open)}</span></div>
+        <div style="font-size:.68rem;color:#4A6355;margin-bottom:7px;">📍 ${sel.dist} · ${sel.addr}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">${sel.mats.map(m=>`<span class="mchip">${MICO[m]||''} ${m}</span>`).join('')}</div>
+      </div>
+    </div>
+    <div style="overflow-y:auto;padding-right:3px;">
+      ${vis.length===0?`<div class="card cp" style="text-align:center;padding:36px;"><div style="font-size:2.2rem;margin-bottom:9px;">📭</div><div style="font-weight:600;">Sin resultados</div><div style="font-size:.75rem;color:#4A6355;margin-top:4px;">No hay puntos que acepten ${S.pFilter} cerca.</div></div>`:''}
+      ${vis.map(p=>`<div class="plcard${S.selPunto===p.id?' sel':''}" data-spp="${p.id}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+          <div><div style="font-weight:700;font-size:.88rem;">${p.name}</div><div style="font-size:.68rem;color:#4A6355;">📍 ${p.dist} · ${p.addr}</div></div>
+          <span>${dot(p.open)}</span>
+        </div>
+        <div style="font-size:.65rem;color:#4A6355;margin-bottom:7px;">🕐 ${p.hours}</div>
+        <div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:9px;">${p.mats.map(m=>`<span class="mchip">${MICO[m]||''} ${m}</span>`).join('')}</div>
+        <button class="btn btn-p btn-sm btn-full">Ver detalles</button>
+      </div>`).join('')}
+    </div>
+  </div></div>`;
+},
+
+/* ════ BENEFICIOS ═══════════════════════════════════════ */
+beneficios() {
+  const cats=['Todos','Descuentos','Productos','Experiencias'];
+  const vis = S.bFilter==='Todos' ? BENS : BENS.filter(b=>b.cat===S.bFilter);
+  return `<div class="pg">
+  <div class="phdr" style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div><div class="ptitle">Beneficios</div><div class="psub">Canjea tus Ecopuntos por beneficios.</div></div>
+    <div style="background:#087A3D;color:#fff;border-radius:13px;padding:9px 14px;display:flex;align-items:center;gap:7px;"><span style="font-size:1.2rem;">⭐</span><div><div style="font-size:1.1rem;font-weight:800;line-height:1;">${S.ecopuntos}</div><div style="font-size:.62rem;opacity:.8;">Ecopuntos disponibles</div></div></div>
+  </div>
+  <div class="frow">${cats.map(c=>`<button class="fp${S.bFilter===c?' act':''}" data-bf="${c}">${c}</button>`).join('')}</div>
+  <div class="g3">
+    ${vis.map(b=>{const can=S.ecopuntos>=b.pts;return`<div class="bcard" data-bid="${b.id}">
+      <div class="biw"><img src="${b.img}" alt="${b.brand}" loading="lazy" style="width:100%;height:130px;object-fit:cover;display:block;"><div class="bov"></div>
+      <div class="bott"><div style="font-size:.88rem;font-weight:700;">${b.offer}</div><div style="font-size:.72rem;opacity:.8;">${b.brand}</div></div>
+      <div class="bbcat"><span class="bdg ${can?'bg':'bgr'}">${b.cat}</span></div></div>
+      <div class="bbody"><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:.78rem;font-weight:700;">⭐ ${b.pts} pts</span><span style="font-size:.68rem;font-weight:600;color:${can?'#087A3D':'#C97D3A'};">${can?'✓ Disponible':'Faltan '+(b.pts-S.ecopuntos)+' pts'}</span></div></div>
+    </div>`;}).join('')}
+  </div>
+  <div class="mov" id="b-modal"><div class="modal" id="bmi"></div></div>
+  </div>`;
+},
+
+/* ════ MIS ECOPUNTOS ════════════════════════════════════ */
+ecopuntos() {
+  const pct=Math.min((S.ecopuntos/500)*100,100), falta=Math.max(500-S.ecopuntos,0);
+  const tg=S.activity.reduce((s,a)=>s+a.pts,0), tc=S.redeemed.reduce((s,r)=>s+r.pts,0);
+  const all=[...S.activity.map(a=>({type:'g',label:`Reciclaje de ${a.material}`,icon:a.icon,pts:a.pts,date:a.date,color:a.color})),...S.redeemed.map(r=>({type:'c',label:r.offer,icon:'🎁',pts:-r.pts,date:r.date,color:'#C97D3A'}))];
+  const fil=S.epFilter==='Todos'?all:S.epFilter==='Ganados'?all.filter(h=>h.type==='g'):all.filter(h=>h.type==='c');
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Mis Ecopuntos</div><div class="psub">Tu saldo, progreso e historial de puntos.</div></div>
+  <div class="bal">
+    <div class="dec">⭐</div>
+    <div style="font-size:.78rem;opacity:.75;margin-bottom:7px;">Tu saldo actual</div>
+    <div style="display:flex;align-items:flex-end;gap:9px;margin-bottom:13px;"><span class="bnum">${S.ecopuntos}</span><span style="font-size:.9rem;font-weight:600;opacity:.7;margin-bottom:4px;">ECOPUNTOS</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:.68rem;opacity:.8;margin-bottom:5px;"><span>${S.ecopuntos} / 500 puntos</span><span>Próximo: 10% descuento</span></div>
+    <div style="background:rgba(255,255,255,.2);border-radius:999px;height:9px;"><div style="background:#fff;height:9px;border-radius:999px;width:${pct}%;transition:width .5s;"></div></div>
+    <div style="font-size:.78rem;opacity:.88;margin-top:7px;">${falta>0?'Te faltan '+falta+' puntos para tu próximo beneficio.':'🎉 ¡Ya puedes canjear tu beneficio!'}</div>
+  </div>
+  <div class="g3" style="margin-bottom:18px;">
+    ${[{l:'Total ganados',v:tg,i:'⭐',c:'#F5B82E'},{l:'Total canjeados',v:tc,i:'🎁',c:'#C97D3A'},{l:'Reciclajes',v:S.activity.length,i:'♻️',c:'#087A3D'}].map(s=>`<div class="card cp" style="text-align:center;"><div style="font-size:1.8rem;margin-bottom:5px;">${s.i}</div><div style="font-size:1.7rem;font-weight:800;color:${s.c};">${s.v}</div><div style="font-size:.68rem;color:#4A6355;margin-top:1px;">${s.l}</div></div>`).join('')}
+  </div>
+  <div class="card cp">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="font-weight:700;font-size:.85rem;">Historial de puntos</div>
+      <div style="display:flex;gap:3px;">${['Todos','Ganados','Canjeados'].map(f=>`<button class="fp btn-sm${S.epFilter===f?' act':''}" data-epf="${f}">${f}</button>`).join('')}</div>
+    </div>
+    ${fil.length===0?`<div style="text-align:center;padding:26px;color:#4A6355;"><div style="font-size:1.8rem;margin-bottom:7px;">📭</div><div style="font-size:.82rem;">Sin registros</div></div>`:''}
+    ${fil.map(h=>`<div class="av-item">
+      <div class="av-ic" style="background:${h.color}20;">${h.icon}</div>
+      <div style="flex:1;min-width:0;"><div style="font-size:.75rem;font-weight:600;">${h.label}</div><div style="font-size:.62rem;color:#4A6355;">${h.date}</div></div>
+      <div style="font-weight:700;font-size:.78rem;color:${h.pts>0?'#087A3D':'#C97D3A'};">${h.pts>0?'+'+h.pts:h.pts} pts</div>
+    </div>`).join('')}
+  </div></div>`;
+},
+
+/* ════ MI ACTIVIDAD ══════════════════════════════════════ */
+actividad() {
+  const kg=S.activity.reduce((s,a)=>s+a.kg,0), co2=+(kg*.65).toFixed(1);
+  const mx=Math.max(...MONTHLY.map(m=>m.v));
+  const mc={};S.activity.forEach(a=>{mc[a.material]=(mc[a.material]||0)+a.kg;});
+  const top=Object.entries(mc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const tot=top.reduce((s,[,v])=>s+v,0);
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Mi actividad</div><div class="psub">Consulta tu progreso y el impacto que estás generando.</div></div>
+  <div class="g4" style="margin-bottom:13px;">
+    ${[{i:'♻️',l:'Reciclajes',v:S.activity.length,c:'#087A3D',bg:'#EEF8EE'},{i:'📦',l:'Material reciclado',v:kg+' kg',c:'#C97D3A',bg:'#FFF4EB'},{i:'⭐',l:'Ecopuntos',v:S.ecopuntos,c:'#F5B82E',bg:'#FFFBEC'},{i:'🌱',l:'CO₂ evitado',v:co2+' kg',c:'#2E9B50',bg:'#EEF8EE'}].map(s=>`<div class="card cp"><div style="width:38px;height:38px;background:${s.bg};border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:9px;">${s.i}</div><div style="font-size:1.5rem;font-weight:800;color:${s.c};">${s.v}</div><div style="font-size:.68rem;color:#4A6355;margin-top:1px;">${s.l}</div></div>`).join('')}
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:13px;margin-bottom:13px;">
+    <div class="card cp">
+      <div style="font-weight:700;font-size:.85rem;margin-bottom:16px;">Material reciclado por mes (kg)</div>
+      <div class="chbars">
+        ${MONTHLY.map((m,i)=>{const h=(m.v/mx)*100,last=i===MONTHLY.length-1;return`<div class="cbw"><div class="cv" style="opacity:${last?1:.6};">${m.v}</div><div class="cb" style="height:${h}%;background:${last?'#087A3D':'#2E9B50'};"></div><div class="cl">${m.m}</div></div>`;}).join('')}
+      </div>
+    </div>
+    <div class="card cp">
+      <div style="font-weight:700;font-size:.85rem;margin-bottom:14px;">Por material</div>
+      ${top.length===0?'<div style="font-size:.75rem;color:#4A6355;text-align:center;padding:18px;">Sin datos aún</div>':''}
+      ${top.map(([mat,v])=>{const p=tot>0?(v/tot)*100:0;return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px;"><span style="font-weight:500;">${mat}</span><span style="color:#4A6355;">${v} kg</span></div><div class="pw"><div class="pb" style="width:${p}%;background:${MCOL[mat]||'#087A3D'};"></div></div></div>`;}).join('')}
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,#087A3D,#2E9B50);border-radius:18px;padding:22px;color:#fff;">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px;font-weight:700;">🌍 Impacto ambiental</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px;">
+      <div style="background:rgba(255,255,255,.12);border-radius:12px;padding:12px;"><div style="font-size:.75rem;opacity:.8;margin-bottom:3px;">Has contribuido a recuperar</div><div style="font-size:1.5rem;font-weight:800;">${kg} kg</div><div style="font-size:.75rem;opacity:.8;">de materiales reciclables</div></div>
+      <div style="background:rgba(255,255,255,.12);border-radius:12px;padding:12px;"><div style="font-size:.75rem;opacity:.8;margin-bottom:3px;">Tu participación evita</div><div style="font-size:1.5rem;font-weight:800;">${co2} kg</div><div style="font-size:.75rem;opacity:.8;">de CO₂ en la atmósfera</div></div>
+    </div>
+    <p style="font-size:.78rem;opacity:.82;">Tu participación ayuda a reducir residuos y fomentar la economía circular. ¡Sigue así! 🌱</p>
+  </div></div>`;
+},
+
+/* ════ HISTORIAL DE BENEFICIOS ══════════════════════════ */
+historial() {
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Historial de beneficios</div><div class="psub">Beneficios que has canjeado con tus Ecopuntos.</div></div>
+  ${S.redeemed.length===0?`<div class="card cp" style="text-align:center;padding:50px;"><div style="font-size:3rem;margin-bottom:11px;">🎁</div><div style="font-weight:700;margin-bottom:5px;">Aún no has canjeado beneficios</div><div style="font-size:.78rem;color:#4A6355;">Acumula Ecopuntos reciclando y canjéalos por increíbles beneficios.</div></div>`:''}
+  ${S.redeemed.map(r=>`<div class="hcard">
+    <img class="himg" src="${r.img}" alt="${r.brand}" loading="lazy">
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;">
+        <div><div style="font-weight:700;font-size:.85rem;">🎁 ${r.brand}</div><div style="font-size:.72rem;color:#4A6355;">${r.offer}</div></div>
+        <span class="bdg ${r.used?'bgr':'bg'}"><span style="width:6px;height:6px;border-radius:50%;background:${r.used?'#9AB0A4':'#087A3D'};display:inline-block;"></span>${r.used?'Utilizado':'Disponible'}</span>
+      </div>
+      <div style="font-size:.65rem;color:#4A6355;margin-bottom:7px;">Canjeado el ${r.date}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;"><span class="hcode">${r.code}</span><span style="font-size:.68rem;color:#4A6355;">⭐ ${r.pts} pts</span></div>
+    </div>
+  </div>`).join('')}
+  </div>`;
+},
+
+/* ════ EDUCACIÓN AMBIENTAL ══════════════════════════════ */
+educacion() {
+  const sel=EDUS.find(m=>m.id===S.eduActive);
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Educación ambiental</div><div class="psub">Aprende a reciclar correctamente.</div></div>
+  <div style="font-weight:700;font-size:.85rem;margin-bottom:11px;">¿Cómo reciclar cada material?</div>
+  <div class="msel">
+    ${EDUS.map(m=>`<button class="mbt${S.eduActive===m.id?' act':''}" data-edu="${m.id}" style="${S.eduActive===m.id?'background:'+m.bg+';':''}"><span style="font-size:1.8rem;">${m.icon}</span><span style="font-size:.72rem;font-weight:600;">${m.title}</span></button>`).join('')}
+  </div>
+  ${sel?`<div style="background:${sel.bg};border-radius:18px;border:1px solid #E0EBE4;padding:18px;margin-bottom:16px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="font-size:2.2rem;">${sel.icon}</span><div><div style="font-size:.95rem;font-weight:700;">Cómo reciclar ${sel.title}</div><div style="font-size:.68rem;color:${sel.color};">Sigue estos pasos</div></div></div>
+    <div class="edu-steps">${sel.steps.map((s,i)=>`<div class="edu-s"><div class="edu-n" style="background:${sel.color};">${i+1}</div><span style="font-size:.72rem;color:#2D3A35;line-height:1.5;">${s}</span></div>`).join('')}</div>
+    <div style="background:#fff;border-radius:10px;padding:9px 11px;border:1px solid #E0EBE4;display:flex;gap:7px;align-items:flex-start;margin-top:4px;"><span>💡</span><div><div style="font-size:.72rem;font-weight:700;color:#087A3D;margin-bottom:2px;">¿Sabías que?</div><div style="font-size:.72rem;color:#4A6355;">${sel.fact}</div></div></div>
+  </div>`:''}
+  <div style="font-weight:700;font-size:.85rem;margin-bottom:11px;">Consejos para reciclar mejor</div>
+  ${[{i:'🏠',t:'Separa en casa con cubos de colores: verde (vidrio), azul (papel/cartón), amarillo (plástico/latas).'},{i:'🚿',t:'Enjuaga siempre los envases antes de reciclar para evitar contaminar otros materiales.'},{i:'📱',t:'Usa la app para encontrar el punto de reciclaje más cercano a tu hogar o trabajo.'},{i:'👨‍👩‍👧',t:'Involucra a tu familia en el reciclaje. Pequeños hábitos generan grandes impactos.'},{i:'🛍️',t:'Usa bolsas reutilizables y lleva tu propio recipiente para reducir residuos desde la raíz.'}].map(t=>`<div class="card" style="display:flex;align-items:flex-start;gap:11px;padding:12px;margin-bottom:9px;"><span style="font-size:1.5rem;flex-shrink:0;">${t.i}</span><p style="font-size:.78rem;color:#2D3A35;line-height:1.6;">${t.t}</p></div>`).join('')}
+  </div>`;
+},
+
+/* ════ CONFIGURACIÓN ════════════════════════════════════ */
+config() {
+  const secs=[
+    {t:'Notificaciones',items:[{k:'push',l:'Notificaciones push',d:'Recibe alertas sobre tus Ecopuntos y reciclajes.'},{k:'email',l:'Correo electrónico',d:'Actualizaciones y boletines de Ecopoint.'},{k:'rem',l:'Recordatorios',d:'Te avisamos cuando pasen muchos días sin reciclar.'}]},
+    {t:'Privacidad',    items:[{k:'pub',l:'Perfil público',d:'Tu actividad puede ser visible en el ranking.'},{k:'share',l:'Compartir impacto',d:'Permite compartir tus logros en redes sociales.'}]},
+    {t:'Preferencias',  items:[{k:'dark',l:'Modo oscuro',d:'Cambia la apariencia de la plataforma.'},{k:'metric',l:'Unidades métricas',d:'Mostrar cantidades en kg en lugar de libras.'}]},
+  ];
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Configuración</div><div class="psub">Personaliza tu experiencia en Ecopoint.</div></div>
+  <div style="max-width:560px;">
+    ${secs.map(s=>`<div class="csec"><h3>${s.t}</h3>${s.items.map((it,i)=>`${i>0?'<hr style="border:none;border-top:1px solid #E0EBE4;margin:6px 0;">':''}<div class="tw"><div><div style="font-size:.85rem;font-weight:500;">${it.l}</div><div style="font-size:.7rem;color:#4A6355;margin-top:1px;">${it.d}</div></div><button class="tgl${S.cfg[it.k]?' on':''}" data-tgl="${it.k}"></button></div>`).join('')}</div>`).join('')}
+    <div class="csec"><h3>Idioma</h3><div style="display:flex;gap:7px;">${['Español','English','Português'].map(l=>`<button class="btn ${S.cfgLang===l?'btn-p':'btn-o'}" data-lang="${l}">${l}</button>`).join('')}</div></div>
+    <div class="csec"><h3>Cuenta</h3><button class="btn btn-o btn-full" style="margin-bottom:7px;justify-content:flex-start;">🔒 Cambiar contraseña</button><button class="btn btn-red btn-full" style="justify-content:flex-start;">🚪 Cerrar sesión</button></div>
+  </div></div>`;
+},
+
+/* ════ AYUDA ════════════════════════════════════════════ */
+ayuda() {
+  return `<div class="pg">
+  <div class="phdr"><div class="ptitle">Centro de ayuda</div><div class="psub">Encuentra respuestas a tus preguntas.</div></div>
+  <div style="max-width:560px;">
+    <div style="position:relative;margin-bottom:18px;"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);">🔍</span><input type="text" placeholder="Buscar en el centro de ayuda..." style="width:100%;padding:11px 13px 11px 36px;border:1px solid #E0EBE4;border-radius:11px;font-family:Poppins,sans-serif;font-size:.82rem;outline:none;" onfocus="this.style.borderColor='#087A3D'" onblur="this.style.borderColor='#E0EBE4'"></div>
+    <div style="font-weight:700;font-size:.85rem;margin-bottom:9px;">Preguntas frecuentes</div>
+    ${FAQS_D.map((f,i)=>`<div class="faq"><button class="faq-q" data-faq="${i}"><span>${f.q}</span><span class="faq-i${S.faqOpen===i?' op':''}">+</span></button><div class="faq-a${S.faqOpen===i?' op':''}">${f.a}</div></div>`).join('')}
+    <div style="background:linear-gradient(135deg,#087A3D,#2E9B50);border-radius:18px;padding:22px;text-align:center;color:#fff;margin-top:18px;">
+      <div style="font-size:2rem;margin-bottom:7px;">💬</div>
+      <div style="font-weight:700;margin-bottom:5px;">¿No encontraste lo que buscabas?</div>
+      <div style="font-size:.78rem;opacity:.82;margin-bottom:12px;">Nuestro equipo está disponible para ayudarte.</div>
+      <button class="btn" style="background:#fff;color:#087A3D;">Contactar soporte</button>
+    </div>
+  </div></div>`;
+},
+};
+
+/* ── Enlazar eventos ─────────────────────────────────────── */
+function bind() {
+  // Navegación
+  document.querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => nav(el.dataset.nav)));
+  // Materiales reciclar
+  document.querySelectorAll('[data-mat]').forEach(el => el.addEventListener('click', () => { S.rec.mat = el.dataset.mat; render(); }));
+  // Stepper buttons
+  const s1n=$('s1n'); if(s1n) s1n.addEventListener('click',()=>{S.rec.step=2;render();});
+  const sb=$('sb'); if(sb) sb.addEventListener('click',()=>{S.rec.step--;render();});
+  const s2n=$('s2n'); if(s2n) s2n.addEventListener('click',()=>{S.rec.step=3;render();});
+  const s3n=$('s3n'); if(s3n) s3n.addEventListener('click',()=>{S.rec.step=4;render();});
+  // Qty
+  const qm=$('qm'),qp=$('qp'),qv=$('qv'),ep=$('ep');
+  if(qm){
+    qm.addEventListener('click',()=>{S.rec.kg=Math.max(.5,+(+S.rec.kg-.5).toFixed(1));qv.value=S.rec.kg;ep.textContent='+'+earned()+' Ecopuntos';});
+    qp.addEventListener('click',()=>{S.rec.kg=+(+S.rec.kg+.5).toFixed(1);qv.value=S.rec.kg;ep.textContent='+'+earned()+' Ecopuntos';});
+    qv.addEventListener('input',()=>{S.rec.kg=+qv.value||.5;ep.textContent='+'+earned()+' Ecopuntos';});
+  }
+  // Puntos
+  document.querySelectorAll('[data-pto]').forEach(el=>{if(!el.hasAttribute('disabled'))el.addEventListener('click',()=>{S.rec.punto=el.dataset.pto;render();});});
+  // Confirmar
+  const cfm=$('cfm'); if(cfm) cfm.addEventListener('click',()=>{
+    const e=earned(),m=MATS.find(x=>x.id===S.rec.mat),p=PUNTOS.find(x=>x.id===S.rec.punto);
+    const n=new Date(),h=n.getHours(),mi=String(n.getMinutes()).padStart(2,'0');
+    S.activity.unshift({material:m.label,kg:S.rec.kg,unit:'kg',punto:p.name,pts:e,date:`Hoy, ${h}:${mi} ${h>=12?'p.m.':'a.m.'}`,icon:m.icon,color:m.color});
+    S.ecopuntos+=e; S.rec.lastEarned=e; S.rec.success=true; render();
+  });
+  // Éxito
+  const ri=$('ri'); if(ri) ri.addEventListener('click',()=>nav('inicio'));
+  const ro=$('ro'); if(ro) ro.addEventListener('click',()=>{S.rec={step:1,mat:null,kg:2,punto:null,success:false,lastEarned:0};render();});
+  // Puntos filtros
+  document.querySelectorAll('[data-pf]').forEach(el=>el.addEventListener('click',()=>{S.pFilter=el.dataset.pf;render();}));
+  document.querySelectorAll('[data-spp]').forEach(el=>el.addEventListener('click',()=>{S.selPunto=el.dataset.spp;render();}));
+  // Beneficios
+  document.querySelectorAll('[data-bf]').forEach(el=>el.addEventListener('click',()=>{S.bFilter=el.dataset.bf;render();}));
+  document.querySelectorAll('[data-bid]').forEach(el=>el.addEventListener('click',()=>openModal(+el.dataset.bid)));
+  // Ecopuntos
+  document.querySelectorAll('[data-epf]').forEach(el=>el.addEventListener('click',()=>{S.epFilter=el.dataset.epf;render();}));
+  // Educación
+  document.querySelectorAll('[data-edu]').forEach(el=>el.addEventListener('click',()=>{S.eduActive=S.eduActive===el.dataset.edu?null:el.dataset.edu;render();}));
+  // FAQ
+  document.querySelectorAll('[data-faq]').forEach(el=>el.addEventListener('click',()=>{const i=+el.dataset.faq;S.faqOpen=S.faqOpen===i?null:i;render();}));
+  // Config
+  document.querySelectorAll('[data-tgl]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.tgl;S.cfg[k]=!S.cfg[k];el.classList.toggle('on',S.cfg[k]);}));
+  document.querySelectorAll('[data-lang]').forEach(el=>el.addEventListener('click',()=>{S.cfgLang=el.dataset.lang;render();}));
+  // Modal backdrop
+  const bm=document.querySelector('.mov');
+  if(bm) bm.addEventListener('click',e=>{if(e.target===bm)bm.classList.remove('open');});
+}
+
+/* ── Modal beneficio ─────────────────────────────────────── */
+function openModal(id) {
+  const b=BENS.find(x=>x.id===id); if(!b) return;
+  const can=S.ecopuntos>=b.pts;
+  const mi=document.getElementById('bmi')||document.querySelector('.modal');
+  if(!mi) return;
+  mi.innerHTML=`
+    <div style="position:relative;"><img src="${b.img}" alt="${b.brand}" style="width:100%;height:170px;object-fit:cover;display:block;">
+    <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.65),transparent);"></div>
+    <div style="position:absolute;bottom:12px;left:14px;color:#fff;"><div style="font-size:1rem;font-weight:700;">${b.offer}</div><div style="font-size:.78rem;opacity:.82;">${b.brand}</div></div>
+    <button id="mcc" style="position:absolute;top:9px;right:9px;background:rgba(255,255,255,.25);border:none;cursor:pointer;width:28px;height:28px;border-radius:50%;color:#fff;font-size:.9rem;display:flex;align-items:center;justify-content:center;">✕</button></div>
+    <div style="padding:18px;" id="mbody">
+      <p style="font-size:.82rem;color:#4A6355;margin-bottom:14px;">${b.desc}</p>
+      <div style="display:flex;justify-content:space-between;margin-bottom:11px;"><span style="font-weight:700;">⭐ ${b.pts} Ecopuntos</span><span style="font-size:.82rem;color:#4A6355;">Tu saldo: <strong style="color:#087A3D;">${S.ecopuntos} pts</strong></span></div>
+      ${!can?`<div style="background:#FFF8EC;border:1px solid rgba(245,184,46,.4);border-radius:10px;padding:9px 11px;font-size:.78rem;color:#C97D3A;font-weight:500;margin-bottom:11px;">⚠️ Te faltan ${b.pts-S.ecopuntos} puntos para obtener este beneficio.</div>`:''}
+      <button class="btn btn-p btn-full" id="rbtn" ${!can?'disabled':''}>
+        ${can?'Canjear beneficio':'Puntos insuficientes'}
+      </button>
+    </div>`;
+  const mov=document.querySelector('.mov'); if(mov) mov.classList.add('open');
+  $('mcc').addEventListener('click',()=>mov&&mov.classList.remove('open'));
+  const rb=$('rbtn');
+  if(can&&rb) rb.addEventListener('click',()=>{
+    S.ecopuntos-=b.pts;
+    const code='ECO-'+Math.floor(1000+Math.random()*9000);
+    S.redeemed.unshift({brand:b.brand,offer:b.offer,pts:b.pts,date:new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'}),code,used:false,img:b.img});
+    $('mbody').innerHTML=`<div style="text-align:center;padding:8px 0;"><div style="font-size:3rem;margin-bottom:9px;">🎉</div><h3 style="font-weight:700;font-size:1rem;margin-bottom:7px;">¡Beneficio canjeado!</h3><p style="font-size:.78rem;color:#4A6355;margin-bottom:12px;">Usa este código en el establecimiento:</p><div class="code-box"><div class="code-val">${code}</div><div style="font-size:.65rem;color:#4A6355;margin-top:3px;">Código de canje único</div></div><button class="btn btn-p btn-full" onclick="document.querySelector('.mov').classList.remove('open');document.getElementById('pts-disp').textContent='${S.ecopuntos} pts';">¡Perfecto!</button></div>`;
+    $('pts-disp').textContent=S.ecopuntos+' pts';
+  });
+}
+
+/* ── Navegación ──────────────────────────────────────────── */
+function nav(page) {
+  S.page=page;
+  S.notifOpen=false; $('ndrop').classList.remove('open');
+  render();
+  $('pc').scrollTop=0;
+}
+
+/* ── Init ────────────────────────────────────────────────── */
+document.querySelectorAll('.ni').forEach(el=>el.addEventListener('click',()=>nav(el.dataset.page)));
+
+$('hamburger').addEventListener('click',()=>{
+  S.sidebarOpen=!S.sidebarOpen;
+  $('sidebar').className=S.sidebarOpen?'':'collapsed';
+  $('hdr-logo').style.display=S.sidebarOpen?'none':'flex';
+});
+
+$('notif-btn').addEventListener('click',e=>{
+  e.stopPropagation();
+  S.notifOpen=!S.notifOpen;
+  $('ndrop').classList.toggle('open',S.notifOpen);
+});
+
+document.addEventListener('click',()=>{
+  if(S.notifOpen){S.notifOpen=false;$('ndrop').classList.remove('open');}
+  if(S.perfilOpen){S.perfilOpen=false;$('ppanel').classList.remove('open');}
+});
+
+$('prof-btn').addEventListener('click',e=>{
+  e.stopPropagation();
+  S.perfilOpen=!S.perfilOpen;
+  $('ppanel').classList.toggle('open',S.perfilOpen);
+});
+$('ppanel').addEventListener('click',e=>e.stopPropagation());
+$('close-pp').addEventListener('click',()=>{S.perfilOpen=false;$('ppanel').classList.remove('open');});
+
+render();
+</script>
+</body>
+</html>

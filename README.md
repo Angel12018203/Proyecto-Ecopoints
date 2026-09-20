@@ -1,135 +1,224 @@
-# 🌿 Ecopoint — Plataforma Web de Reciclaje y Economía Circular
+# 🌿 EcoPoints — Plataforma de Gestión de Reciclaje y Recompensas
 
-Plataforma web modular desarrollada en **PHP** y **MySQL** que conecta:
-**Ciudadanos → Recicladores → Centros de Acopio**.
+> **"Conecta tu trabajo con nuevas oportunidades de recolección y convierte tu esfuerzo en beneficios."**
 
 ---
 
-## 🚀 Puesta en Marcha en Entorno Local (XAMPP / WAMP / Laragon)
+## 📌 1. Objetivo del Proyecto
 
-### 1. Base de Datos (phpMyAdmin)
-1. Abre tu panel de **phpMyAdmin** (usualmente en `http://localhost/phpmyadmin`).
-2. Haz clic en la pestaña **Importar**.
+**EcoPoints** es una plataforma digital que articula y profesionaliza el ecosistema de reciclaje en Bogotá D.C., conectando de manera directa a tres actores:
+
+$$\text{Ciudadanos} \longrightarrow \text{Recicladores} \longrightarrow \text{Centros de Acopio}$$
+
+El **Reciclador es el actor principal del sistema**. La plataforma está concebida como una **herramienta profesional de trabajo** que le permite:
+- Encontrar oportunidades y solicitudes de recolección cercanas.
+- Optimizar y organizar recorridos y rutas.
+- Localizar centros de acopio autorizados para pesaje y entrega.
+- Acumular **Ecopoints** certificados tras la validación oficial del centro.
+- Canjear sus puntos acumulados por beneficios reales (equipamiento, bonos de alimentación, conectividad).
+- Visualizar su impacto ambiental y avanzar en su nivel de reconocimiento.
+
+### Regla Fundamental del Negocio
+> ⚠️ **Los Ecopoints NO se generan al aceptar una solicitud ni al registrar la recolección.**  
+> El ciclo real y seguro es:  
+> $$\textbf{Aceptar} \longrightarrow \textbf{Recoger} \longrightarrow \textbf{Entregar} \longrightarrow \textbf{Pesar} \longrightarrow \textbf{Validar} \longrightarrow \textbf{Acreditar Ecopoints}$$
+
+---
+
+## 🛠️ 2. Tecnologías Utilizadas
+
+Este proyecto sigue una arquitectura web limpia, robusta y sin dependencias innecesarias de frameworks modernos:
+
+- **Backend:** PHP 7.2+ / PHP 8.x nativo orientado a objetos bajo arquitectura MVC.
+- **Base de Datos:** MySQL 5.7+ / MySQL 8.0+ / MariaDB con PDO (PHP Data Objects).
+- **Frontend:** HTML5 semántico, CSS3 moderno con variables HSL/Hex, JavaScript Vanilla interactivo.
+- **Tipografía:** *Poppins* (Google Fonts) en pesos 400, 500, 600, 700 y 800.
+- **Servidor Local:** Apache en XAMPP + phpMyAdmin.
+
+---
+
+## 🏛️ 3. Arquitectura Modelo–Vista–Controlador (MVC)
+
+El proyecto separa estrictamente las responsabilidades para garantizar mantenibilidad, seguridad y escalabilidad:
+
+```text
+c:/xampp/htdocs/Proyecto_Ecopoints/
+│
+├── app/
+│   ├── config/
+│   │   ├── config.php             # Constantes globales, sesiones seguras y BASE_URL
+│   │   └── database.php           # Conexión Singleton PDO con emulación apagada y UTF-8
+│   │
+│   ├── helpers/
+│   │   ├── auth_helper.php        # currentUser(), requireLogin(), requireRole(), logoutUser()
+│   │   ├── csrf_helper.php        # csrf_token(), csrf_input(), verify_csrf()
+│   │   └── view_helper.php        # h() contra XSS, url(), asset(), flash()
+│   │
+│   ├── middleware/
+│   │   └── AuthMiddleware.php     # Interceptores de ruta por rol (reciclador, ciudadano, centro)
+│   │
+│   ├── models/
+│   │   ├── Model.php              # Clase base PDO con soporte transaccional (commit/rollBack)
+│   │   ├── Usuario.php            # Autenticación, hash BCRYPT y búsqueda por correo
+│   │   ├── Localidad.php          # Catálogo oficial de las 20 localidades de Bogotá D.C.
+│   │   ├── Reciclador.php         # Perfil reciclador, cálculo dinámico de nivel y métricas
+│   │   ├── Ciudadano.php          # Perfil ciudadano domiciliario
+│   │   └── CentroAcopio.php       # Perfil del establecimiento y horarios de pesaje
+│   │
+│   ├── controllers/
+│   │   ├── Controller.php         # Clase base con view(), redirect() y json()
+│   │   ├── AuthController.php     # Flujos de Login, Registro dinámico multi-rol y Logout
+│   │   ├── RecicladorController.php # Dashboard del reciclador y gestión operativa
+│   │   ├── CiudadanoController.php  # Panel del ciudadano generador
+│   │   └── CentroAcopioController.php # Panel del centro receptor y pesaje
+│   │
+│   └── views/
+│       ├── layouts/
+│       │   ├── header.php         # Head HTML, meta viewport y fuentes Poppins
+│       │   ├── sidebar.php        # Navegación lateral de 252px fiel a Figma
+│       │   ├── topbar.php         # Barra superior con píldora de puntos y avatar
+│       │   ├── profile_panel.php  # Panel lateral deslizable de perfil
+│       │   └── footer.php         # Cierre de contenedor y carga de app.js
+│       ├── auth/
+│       │   ├── login.php          # Login split-screen de alta fidelidad Figma
+│       │   └── registro.php       # Registro multi-rol con selector de localidades
+│       ├── reciclador/
+│       │   └── dashboard.php      # Dashboard principal ¡Hola, Carlos! con tarjetas métricas
+│       ├── ciudadano/
+│       │   └── dashboard.php      # Panel del ciudadano
+│       └── centro_acopio/
+│           └── dashboard.php      # Panel del centro de acopio
+│
+├── public/
+│   ├── css/
+│   │   └── styles.css             # Hoja de estilos unificada basada en el diseño Figma
+│   ├── js/
+│   │   ├── app.js                 # Control de sidebar, notificaciones y perfil
+│   │   └── auth.js                # Alternancia de rol y validación de contraseñas
+│   └── img/
+│       └── [Logos e isotipos oficiales de EcoPoints]
+│
+├── database/
+│   └── ecopoint.sql               # Script SQL completo y normalizado con localidades
+│
+├── tests/
+│   └── verify.php                 # Suite automatizada de pruebas CLI
+│
+├── .htaccess                      # Configuración de URLs amigables en Apache
+├── index.php                      # Enrutador Front Controller
+└── README.md                      # Documentación del proyecto
+```
+
+---
+
+## 🔒 4. Medidas de Seguridad Implementadas
+
+1. **Hash Criptográfico de Contraseñas:**
+   - Implementado mediante `password_hash($password, PASSWORD_BCRYPT)` con costo 10 y `password_verify()`. Nunca se almacenan ni comparan contraseñas en texto plano.
+2. **Protección contra Inyecciones SQL:**
+   - Conexiones administradas con PDO, sentencias preparadas nativas (`PDO::ATTR_EMULATE_PREPARES => false`) y paso de parámetros vinculados (`bindValue`).
+3. **Protección contra CSRF (Cross-Site Request Forgery):**
+   - Tokens criptográficos de 64 caracteres hexadecimales generados con `random_bytes(32)`. Se incrustan en formularios POST mediante `csrf_input()` y se verifican con `hash_equals()` en tiempo constante.
+4. **Protección contra XSS (Cross-Site Scripting):**
+   - Función auxiliar `h($string)` que escapa caracteres con `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` en todas las salidas dinámicas.
+5. **Prevención de Session Fixation:**
+   - Ejecución obligatoria de `session_regenerate_id(true)` inmediatamente después de cada inicio de sesión exitoso.
+6. **Control de Acceso Basado en Roles (RBAC):**
+   - Interceptores en `AuthMiddleware.php` y `auth_helper.php` (`requireLogin()`, `requireRole()`). Un usuario no puede saltarse la protección escribiendo la URL manualmente en el navegador.
+
+---
+
+## 🗺️ 5. Catálogo Normalizado de Localidades
+
+De acuerdo al requerimiento #17, las localidades están completamente normalizadas en la tabla `localidades` con clave foránea `id_localidad` en usuarios y entidades:
+
+| ID | # | Localidad | ID | # | Localidad |
+|:---:|:---:|:---|:---:|:---:|:---|
+| 1 | 1 | Usaquén | 11 | 11 | Suba |
+| 2 | 2 | Chapinero | 12 | 12 | Barrios Unidos |
+| 3 | 3 | Santa Fe | 13 | 13 | Teusaquillo |
+| 4 | 4 | San Cristóbal | 14 | 14 | Los Mártires |
+| 5 | 5 | Usme | 15 | 15 | Antonio Nariño |
+| 6 | 6 | Tunjuelito | 16 | 16 | Puente Aranda |
+| 7 | 7 | Bosa | 17 | 17 | La Candelaria |
+| 8 | 8 | Kennedy | 18 | 18 | Rafael Uribe Uribe |
+| 9 | 9 | Fontibón | 19 | 19 | Ciudad Bolívar |
+| 10 | 10 | Engativá | 20 | 20 | Sumapaz |
+
+---
+
+## 🚀 6. Instalación y Puesta en Marcha en XAMPP
+
+### Paso 1: Ubicación del Proyecto
+Coloca la carpeta del proyecto en la raíz web de XAMPP:
+```text
+C:\xampp\htdocs\Proyecto_Ecopoints\
+```
+
+### Paso 2: Iniciar Servidores en XAMPP
+Abre el **XAMPP Control Panel** y presiona **Start** en los módulos:
+- **Apache** (Puerto 80 / 443)
+- **MySQL** (Puerto 3306)
+
+### Paso 3: Importar la Base de Datos
+1. Abre tu navegador y accede a phpMyAdmin:
+   ```text
+   http://localhost/phpmyadmin/
+   ```
+2. Ve a la pestaña **Importar**.
 3. Selecciona el archivo:
+   ```text
+   C:\xampp\htdocs\Proyecto_Ecopoints\database\ecopoint.sql
    ```
-   database/ecopoint.sql
-   ```
-4. Haz clic en **Importar / Ejecutar**. Se creará la base de datos `ecopoint` con todas sus tablas, relaciones foráneas, índices y datos iniciales de prueba.
+4. Haz clic en **Continuar** / **Importar**.
+*(El script creará automáticamente la base de datos `ecopoint` con todas las tablas, localidades y usuarios semilla).*
 
-### 2. Configuración de Conexión (Opcional)
-Si tu MySQL tiene usuario o contraseña diferente a `root` y vacío, ajusta los valores en:
-`config/database.php`:
-```php
-private static string $host = '127.0.0.1';
-private static string $dbname = 'ecopoint';
-private static string $user = 'root';
-private static string $pass = '';
+### Paso 4: Acceder a la Aplicación
+Abre en tu navegador la URL:
+```text
+http://localhost/Proyecto_Ecopoints/
+```
+*(Serás redirigido automáticamente a la pantalla de Inicio de Sesión).*
+
+---
+
+## 🔑 7. Cuentas y Credenciales de Prueba
+
+Para probar de inmediato los diferentes flujos y paneles por rol:
+
+| Rol | Correo Electrónico | Contraseña | Panel Destino |
+|:---|:---|:---|:---|
+| **Reciclador** *(Actor Principal)* | `reciclador@ecopoint.app` | `Carlos123*` | `/reciclador` (Dashboard ¡Hola, Carlos!) |
+| **Ciudadano** | `ciudadano@ecopoint.app` | `Maria123*` | `/ciudadano` (Panel de Solicitudes) |
+| **Centro de Acopio** | `centro@ecopoint.app` | `Centro123*` | `/centro-acopio` (Recepción y Pesaje) |
+
+---
+
+## 🧪 8. Ejecución de Pruebas Automatizadas
+
+El proyecto incluye una suite de pruebas CLI que valida 24 aserciones críticas de seguridad y base de datos:
+
+Desde PowerShell o CMD ejecuta:
+```powershell
+C:\xampp\php\php.exe C:\xampp\htdocs\Proyecto_Ecopoints\tests\verify.php
 ```
 
-### 3. Ejecutar el Proyecto
-- Si usas **XAMPP / WAMP / Laragon**, coloca la carpeta en `htdocs` o `www` y abre:
-  ```
-  http://localhost/Proyecto_Ecopoints/
-  ```
-- O si ejecutas el servidor embebido de PHP desde la terminal en esta carpeta:
-  ```bash
-  php -S localhost:8000
-  ```
-  y abre `http://localhost:8000` en tu navegador.
-
----
-
-## 👥 Cuentas de Demostración Iniciales
-
-| Rol | Correo Electrónico | Contraseña | Perfil Inicial |
-| :--- | :--- | :--- | :--- |
-| **♻️ Reciclador** | `reciclador@ecopoint.app` | `Carlos123*` | Carlos Rodríguez • Suba • 2.850 Ecopuntos • Reciclador Destacado |
-| **👤 Ciudadano** | `ciudadano@ecopoint.app` | `Maria123*` | María Gómez • Suba Centro • Calle 145 # 92-30 |
-
----
-
-## 🧪 Demostración del Flujo Maestro de Prueba (Punto 39)
-
-Sigue estos pasos para verificar el ciclo completo de negocio:
-
-1. **Inicio:** Inicia sesión con la cuenta de ciudadana: `ciudadano@ecopoint.app` / `Maria123*`.
-2. **Crear Solicitud:** Ve a **Solicitar Recolección**, indica 30 kg de Cartón en Suba, horario 2:00 p.m. - 5:00 p.m. y publica.
-3. **Cerrar Sesión:** Haz clic en *Cerrar Sesión* en el menú lateral.
-4. **Ingresar como Reciclador:** Inicia sesión con `reciclador@ecopoint.app` / `Carlos123*`.
-5. **Ver Solicitudes Cercanas:** En tu panel o en *Solicitudes Cercanas*, observa la Solicitud (Cartón, Suba, ~800 m).
-6. **Aceptar Solicitud:** Haz clic en **Aceptar Solicitud** (el estado pasa a *Aceptada* y se agrega a *Mi Ruta*).
-7. **Registrar Recolección:** Ve a *Mis Recolecciones* o *Mi Ruta*, haz clic en **⚖️ Registrar Peso** e ingresa **28 kg** recolectados en sitio. *(Comprueba que **NO** se generan Ecopuntos aún)*.
-8. **Registrar Entrega:** Ve a *Entregas & Pesaje*, registra el ingreso de los 28 kg en el *EcoCentro Suba Verde*.
-9. **Validar Pesaje:** En la tabla de entregas, haz clic en **⚖️ Validar Pesaje (Centro)**, confirma el peso verificado en balanza digital (**27.5 kg**).
-10. **Acreditación Automática:** El sistema aplica la regla `27.5 kg × 10 pts/kg = +275 Ecopuntos`.
-11. **Consultar Ecopuntos:** Ve a *Mis Ecopuntos* y observa el nuevo saldo incrementado y el movimiento en tu historial.
-12. **Canje de Beneficios:** Ve a *Beneficios & Canjes* y prueba canjear un beneficio con control estricto de saldo.
-
----
-
-## 📁 Arquitectura Modular de Archivos
-
-```
-ecopoint/
-├── index.php                      # Portada y presentación institucional
-├── login.php                      # Inicio de sesión con autenticación segura
-├── seleccionar_rol.php            # Selección de rol previo al formulario
-├── registro.php                   # Formulario adaptativo por rol (reciclador / ciudadano)
-├── recuperar.php                  # Solicitud de recuperación de contraseña
-├── logout.php                     # Cierre y destrucción de sesión
-│
-├── config/
-│   └── database.php               # Conexión PDO Singleton (MySQL / utf8mb4)
-│
-├── auth/
-│   ├── auth.php                   # Sesiones, hash, helpers y regla de negocio de Ecopoints
-│   └── permissions.php            # Middleware de protección de rutas y control de roles
-│
-├── includes/
-│   ├── header.php                 # Header HTML, navegación y saldo en tiempo real
-│   ├── sidebar.php                # Menú lateral dinámico exclusivo por rol
-│   ├── alerts.php                 # Sistema de notificaciones flash
-│   └── footer.php                 # Pie de página y carga de scripts
-│
-├── reciclador/
-│   ├── dashboard.php              # Métricas, oportunidades cercanas y acceso a rutas
-│   ├── solicitudes.php            # Oportunidades de recolección filtradas
-│   ├── solicitud_detalle.php      # Vista detallada de solicitud y mapa
-│   ├── ruta.php                   # Itinerario ordenado de paradas diarias
-│   ├── recolecciones.php          # Mis recolecciones en curso y completadas
-│   ├── registrar_recoleccion.php  # Registro de peso en sitio (sin generar puntos)
-│   ├── centros.php                # Directorio de centros de acopio autorizados
-│   ├── entregas.php               # Entrega y simulación de pesaje oficial
-│   ├── ecopuntos.php              # Historial de puntos validados y saldo
-│   ├── beneficios.php             # Catálogo de recompensas y canjes
-│   ├── impacto.php                # Indicadores de impacto ambiental (árboles, CO2, agua)
-│   ├── logros.php                 # Escalafón de reciclaje y medallas
-│   └── perfil.php                 # Configuración de zona y vehículo
-│
-├── ciudadano/
-│   ├── dashboard.php              # Resumen de solicitudes y botón de solicitar
-│   ├── solicitar.php              # Formulario para publicar material reciclable
-│   ├── solicitudes.php            # Monitoreo de solicitudes y opción de cancelar
-│   ├── detalle_solicitud.php      # Trazabilidad en vivo con stepper
-│   ├── historial.php              # Resumen histórico de kg donados
-│   └── perfil.php                 # Configuración de dirección y preferencias
-│
-├── css/
-│   └── style.css                  # Estilos oficiales Ecopoint (Poppins, verde, dorado)
-│
-├── js/
-│   └── app.js                     # Interactividad, modales y cálculo de puntos
-│
-└── database/
-    └── ecopoint.sql               # Esquema DDL + DML completo para phpMyAdmin
+Resultado esperado:
+```text
+RESULTADOS DE LAS PRUEBAS: 24 / 24 PASADAS CON ÉXITO
+ESTADO: 🎉 TODAS LAS PRUEBAS DE LA FASE 1 CUMPLIDAS SATISFACTORIAMENTE
 ```
 
 ---
 
-## 🛡️ Seguridad Implementada
-- **Contraseñas:** Hasheadas con `password_hash()` (algoritmo BCRYPT) y verificadas con `password_verify()`.
-- **Inyecciones SQL:** 100% de las consultas preparadas mediante PDO con bindings (`:parametro`).
-- **XSS:** Escape de salidas con función `h()` (`htmlspecialchars`).
-- **CSRF:** Tokens criptográficos obligatorios en formularios POST.
-- **Sesiones:** Regeneración de `session_id()` tras login para prevenir Session Fixation.
-- **Control de Acceso:** Middleware estricto por rol (`requireRole('reciclador')`, `requireRole('ciudadano')`).
+## 📅 9. Plan de Fases del Proyecto
+
+- [x] **Fase 1 (Actual):** Arquitectura MVC + Base de Datos + Localidades + Registro Multi-Rol + Login + Sesiones + Roles + Seguridad + Diseño Figma.
+- [ ] **Fase 2:** Módulo de Solicitudes Domiciliarias del Ciudadano.
+- [ ] **Fase 3:** Gestión de Solicitudes Cercanas para el Reciclador (Filtros y Detalle).
+- [ ] **Fase 4:** Mi Ruta y Organización de Recorridos.
+- [ ] **Fase 5:** Directorio y Mapa de Centros de Acopio.
+- [ ] **Fase 6:** Entregas, Pesaje Oficial y Validación en Centro de Acopio.
+- [ ] **Fase 7:** Generación y Acreditación de Ecopoints.
+- [ ] **Fase 8:** Catálogo de Beneficios y Sistema de Canjes.
+- [ ] **Fase 9:** Mi Impacto Ambiental, Estadísticas y Reconocimientos.

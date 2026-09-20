@@ -1,0 +1,774 @@
+/* ═══════════════════════════════════════════════════════════
+   ECOPOINT — SISTEMA DE DISEÑO Y HOJA DE ESTILOS MAESTRA
+   Fiel al prototipo de alta fidelidad de Figma
+   ═══════════════════════════════════════════════════════════
+   
+   PALETA DE COLORES OFICIAL:
+   - Verde Principal:   #087A3D (Botones, elementos activos, branding)
+   - Verde Oscuro:      #065C2D (Hover, estados destacados)
+   - Verde Secundario:  #2E9B50 (Iconos, acentos e indicadores)
+   - Verde Claro:       #EEF8EE (Fondos de tarjetas, chips activos)
+   - Dorado / Oro:      #F5B82E (Ecopoints, niveles, trofeos)
+   - Azul Claro:        #EAF4FA (Mapas, rutas y ubicaciones)
+   - Fondo General:     #FAFCFA (Fondo limpio ecológico)
+   
+   TIPOGRAFÍA:
+   - Poppins (Google Fonts) en pesos 400, 500, 600, 700 y 800
+*/
+
+/* ── Reseteo y Base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green: #087A3D;
+  --green-dark: #065C2D;
+  --green-mid: #2E9B50;
+  --green-light: #EEF8EE;
+  --gold: #F5B82E;
+  --blue-light: #EAF4FA;
+  --bg: #FAFCFA;
+  --surface: #ffffff;
+  --border: #E0EBE4;
+  --text: #1A2E22;
+  --muted: #4A6355;
+  --label: #2D3A35;
+  --danger: #E53E3E;
+  --danger-bg: #FFF5F5;
+  --danger-border: #FDDCDC;
+  --r: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.14);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Scrollbars Sutiles ── */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #C1D8C9;
+  border-radius: 99px;
+}
+
+/* ── Layout General de la Aplicación ── */
+#app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Sidebar (Barra Lateral de Navegación: 252px) ── */
+#sidebar {
+  width: 252px;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  transition: width 0.25s ease;
+  overflow: hidden;
+  z-index: 50;
+}
+
+#sidebar.collapsed {
+  width: 0;
+}
+
+.s-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+}
+
+.s-logo-text {
+  font-size: 1.18rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.s-logo-text .eco {
+  color: var(--green);
+}
+
+.s-logo-text .pt {
+  color: var(--text);
+}
+
+.s-nav {
+  flex: 1;
+  padding: 12px 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ni {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  margin: 0 8px;
+  border-radius: var(--r);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  width: calc(100% - 16px);
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ni:hover {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.ni.active {
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ni svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.ni.active svg *[stroke] {
+  stroke: #fff !important;
+}
+
+.ni.active svg *[fill]:not([fill="none"]) {
+  fill: #fff !important;
+}
+
+.s-badge {
+  background: var(--green);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  margin-left: auto;
+}
+
+.ni.active .s-badge {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.s-div {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 6px 0;
+}
+
+/* ── Contenedor Principal (Main) ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Cabecera Superior (Header) ── */
+#hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
+}
+
+.hsp {
+  flex: 1;
+}
+
+.pts-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-light);
+  color: var(--green);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(8, 122, 61, 0.15);
+  cursor: default;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #F4F6F5;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  position: relative;
+  transition: background 0.15s, color 0.15s;
+}
+
+.icon-btn:hover {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.badge-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+}
+
+.prof-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 12px;
+  border-radius: var(--r);
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.prof-btn:hover {
+  background: var(--green-light);
+  border-color: var(--border);
+}
+
+.prof-btn img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}
+
+.prof-btn span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--label);
+  white-space: nowrap;
+}
+
+/* ── Desplegable de Notificaciones ── */
+.ndrop {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 120px;
+  width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  overflow: hidden;
+  display: none;
+  animation: dropIn 0.18s ease;
+}
+
+.ndrop.open {
+  display: block;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ndrop-h {
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--border);
+  background: #FAFCFA;
+}
+
+.ndrop-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #F4F6F5;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ndrop-item:last-child {
+  border: none;
+}
+
+.ndrop-item:hover {
+  background: #F8FBF8;
+}
+
+.ndrop-msg {
+  font-size: 0.74rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.ndrop-time {
+  font-size: 0.64rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Contenido de Páginas ── */
+#pc {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.pg {
+  padding: 24px 28px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.ptitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.psub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.phdr {
+  margin-bottom: 22px;
+}
+
+/* ── Pie de Página (Footer) ── */
+#ftr {
+  background: #F0F5F2;
+  border-top: 1px solid var(--border);
+  padding: 10px 24px;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* ── Tarjetas (Cards) ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.cp {
+  padding: 20px;
+}
+
+/* ── Cuadrículas (Grids Responsivos) ── */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.g3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.g4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1100px) {
+  .g4 { grid-template-columns: 1fr 1fr; }
+  .g3 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .g4, .g2 { grid-template-columns: 1fr; }
+  .pg { padding: 16px; }
+  #sidebar { position: fixed; height: 100%; top: 0; left: 0; }
+  #sidebar.collapsed { width: 0; }
+}
+
+/* ── Botones del Sistema ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--r);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: background 0.15s, opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-p {
+  background: var(--green);
+  color: #fff;
+}
+
+.btn-p:hover {
+  background: var(--green-dark);
+}
+
+.btn-o {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn-o:hover {
+  background: #F4F6F5;
+  color: var(--text);
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.72rem;
+}
+
+.btn-red {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger-border);
+}
+
+.btn-red:hover {
+  background: var(--danger-bg);
+}
+
+/* ── Pastillas de Filtro (Filter Pills) ── */
+.frow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.fp {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.15s;
+}
+
+.fp:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.fp.act {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+
+/* ── Badges y Chips de Estado ── */
+.bdg {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.bg {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.br {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.by {
+  background: #FFF9E6;
+  color: #B28300;
+}
+
+.bgr {
+  background: #F4F6F5;
+  color: var(--muted);
+}
+
+/* ── Barra de Progreso ── */
+.pw {
+  background: #E0EBE4;
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.pb {
+  background: var(--green);
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+/* ── Panel Lateral Deslizable de Perfil (Profile Panel) ── */
+.ppanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: slideIn 0.22s ease;
+}
+
+.ppanel.open {
+  display: flex;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.pp-hdr {
+  background: linear-gradient(135deg, #087A3D, #2E9B50);
+  padding: 22px;
+  color: #fff;
+}
+
+.pp-body {
+  padding: 16px;
+  flex: 1;
+}
+
+.pp-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--r);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--label);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: 'Poppins', sans-serif;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.pp-opt:hover {
+  background: var(--green-light);
+}
+
+.pp-opt.dng {
+  color: var(--danger);
+}
+
+.pp-opt.dng:hover {
+  background: var(--danger-bg);
+}
+
+/* ── Ventanas Modales ── */
+.mov {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.mov.open {
+  display: flex;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  max-width: 440px;
+  width: 100%;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: modalUp 0.2s ease;
+}
+
+@keyframes modalUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Formulario y Controles de Entrada (Inputs) ── */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--label);
+  margin-bottom: 5px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(8, 122, 61, 0.12);
+}
+
+.alert-error {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.78rem;
+  color: var(--danger);
+  line-height: 1.45;
+}
+
+.alert-success {
+  background: var(--green-light);
+  border: 1px solid rgba(8, 122, 61, 0.25);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.78rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* ── Tarjeta Hero del Dashboard ── */
+.sh {
+  border-radius: var(--r-xl);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sh .dec {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  font-size: 3.8rem;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.sh-val {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sh-sub {
+  font-size: 0.72rem;
+  opacity: 0.85;
+  margin-top: 6px;
+}

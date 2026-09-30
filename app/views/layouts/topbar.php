@@ -24,14 +24,9 @@ $nombre = $user['nombre'] ?? 'Usuario';
     </svg>
   </button>
 
-  <!-- Logotipo compacto visible cuando el sidebar está colapsado -->
-  <div id="hdr-logo" style="display:none;align-items:center;gap:7px;">
-    <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
-      <rect width="30" height="30" rx="9" fill="#087A3D"/>
-      <path d="M15 5C8 9.5 8 17 8 17C8 20.866 11.134 24 15 24C18.866 24 22 20.866 22 17C22 9.5 15 5 15 5Z" fill="white" opacity=".92"/>
-      <path d="M15 9V22" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M11.5 14L15 10.5L18.5 14" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <!-- Logotipo compacto oficial visible cuando el sidebar está colapsado -->
+  <div id="hdr-logo" style="display:none;align-items:center;gap:8px;">
+    <img src="<?= asset('img/logo-compacto.jpg') ?>" alt="EcoPoint" style="height:26px;width:auto;border-radius:4px;" />
     <span style="font-size:1rem;font-weight:800;"><span style="color:#087A3D;">Eco</span><span style="color:#1A2E22;">point</span></span>
   </div>
 
@@ -80,7 +75,7 @@ $nombre = $user['nombre'] ?? 'Usuario';
 
   <!-- Botón de Perfil con Avatar -->
   <button class="prof-btn" id="prof-btn" title="Abrir perfil de usuario">
-    <img src="https://images.unsplash.com/photo-1546961342-ea5f60a193a5?w=80&h=80&fit=crop&auto=format" alt="<?= h($nombre) ?>">
+    <img src="<?= asset('img/logo-isotipo.jpg') ?>" alt="<?= h($nombre) ?>" style="object-fit:cover;">
     <span>¡Hola, <?= h($nombre) ?>!</span>
     <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
       <path d="M4 6L8 10L12 6" stroke="#4A6355" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

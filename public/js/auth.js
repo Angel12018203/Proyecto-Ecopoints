@@ -104,4 +104,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 4. VISUALIZADOR DE CONTRASEÑAS (Mostrar / Ocultar Contraseña)
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const wrapper = btn.closest('.password-wrapper');
+            if (!wrapper) return;
+            const input = wrapper.querySelector('input');
+            if (!input) return;
+
+            const isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+
+            const eyeOpen = btn.querySelector('.eye-open');
+            const eyeClosed = btn.querySelector('.eye-closed');
+
+            if (eyeOpen && eyeClosed) {
+                if (isPassword) {
+                    eyeOpen.style.display = 'none';
+                    eyeClosed.style.display = 'block';
+                    btn.setAttribute('aria-label', 'Ocultar contraseña');
+                    btn.title = 'Ocultar contraseña';
+                } else {
+                    eyeOpen.style.display = 'block';
+                    eyeClosed.style.display = 'none';
+                    btn.setAttribute('aria-label', 'Mostrar contraseña');
+                    btn.title = 'Mostrar contraseña';
+                }
+            }
+        });
+    });
 });

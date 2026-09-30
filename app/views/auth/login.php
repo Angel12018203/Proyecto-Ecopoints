@@ -11,7 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Estilos del Sistema de Diseño -->
-  <link rel="stylesheet" href="<?= asset('css/styles.css') ?>" />
+  <link rel="stylesheet" href="<?= asset('css/styles.css') ?>?v=<?= time() ?>" />
+  
+  <!-- Favicon e Isotipo Oficial EcoPoints -->
+  <link rel="icon" type="image/jpeg" href="<?= asset('img/logo-isotipo.jpg') ?>" />
 </head>
 <body style="background:#FAFCFA;margin:0;padding:0;">
 
@@ -26,15 +29,9 @@
     </div>
 
     <div style="position:relative;max-width:440px;">
-      <!-- Logotipo Blanco -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
-        <svg width="42" height="42" viewBox="0 0 30 30" fill="none">
-          <rect width="30" height="30" rx="9" fill="white"/>
-          <path d="M15 5C8 9.5 8 17 8 17C8 20.866 11.134 24 15 24C18.866 24 22 20.866 22 17C22 9.5 15 5 15 5Z" fill="#087A3D" opacity=".92"/>
-          <path d="M15 9V22" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M11.5 14L15 10.5L18.5 14" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span style="font-size:1.8rem;font-weight:800;letter-spacing:-0.5px;">Eco<span style="opacity:0.9;">point</span></span>
+      <!-- Logotipo Oficial: Versión Contrapuesta sobre fondo verde (Grande y Centrado) -->
+      <div style="display:flex;justify-content:center;margin-bottom:34px;">
+        <img src="<?= asset('img/logo-contrapuesto.jpg') ?>" alt="EcoPoints" style="width:260px;max-width:100%;height:auto;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.24);border:1px solid rgba(255,255,255,0.18);display:block;" onerror="this.onerror=null;this.src='<?= asset('img/logo-transparente.png') ?>';" />
       </div>
 
       <!-- Frase Central del Negocio -->
@@ -65,10 +62,8 @@
     <div style="width:100%;max-width:360px;">
       
       <!-- Encabezado del Formulario -->
-      <div style="text-align:center;margin-bottom:32px;">
-        <div style="font-size:1.8rem;font-weight:800;margin-bottom:4px;">
-          <span style="color:#087A3D;">Eco</span><span style="color:#1A2E22;">point</span>
-        </div>
+      <div style="text-align:center;margin-bottom:28px;">
+        <img src="<?= asset('img/logo-horizontal.jpg') ?>" alt="EcoPoint" style="height:48px;width:auto;object-fit:contain;margin-bottom:6px;" onerror="this.style.display='none';" />
         <div style="font-size:0.85rem;color:#4A6355;font-weight:500;">
           Herramienta profesional de recolección
         </div>
@@ -107,16 +102,38 @@
 
         <div class="form-group" style="margin-bottom:8px;">
           <label class="form-label" for="password">Contraseña</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            class="form-input" 
-            placeholder="••••••••" 
-            value="Carlos123*" 
-            required 
-            autocomplete="current-password"
-          />
+          <div class="password-wrapper" style="position:relative;display:flex;align-items:center;width:100%;">
+            <input 
+              type="password" 
+              id="password" 
+              name="password" 
+              class="form-input" 
+              placeholder="••••••••" 
+              value="Carlos123*" 
+              required 
+              autocomplete="current-password"
+              style="width:100%;padding-right:44px;"
+            />
+            <button 
+              type="button" 
+              class="toggle-password" 
+              onclick="togglePasswordVisibility(this)"
+              title="Mostrar contraseña" 
+              aria-label="Mostrar contraseña"
+              style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:6px;color:#6B7280;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;"
+            >
+              <!-- Ojo abierto (mostrar) -->
+              <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <!-- Ojo cerrado (ocultar) -->
+              <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div style="text-align:right;margin-bottom:22px;">
@@ -143,7 +160,8 @@
         <strong>🔑 Cuentas demo para probar:</strong><br>
         • <strong>Reciclador:</strong> reciclador@ecopoint.app | Carlos123*<br>
         • <strong>Ciudadano:</strong> ciudadano@ecopoint.app | Maria123*<br>
-        • <strong>Centro Acopio:</strong> centro@ecopoint.app | Centro123*
+        • <strong>Centro Acopio:</strong> centro@ecopoint.app | Centro123*<br>
+        • <strong>Administrador:</strong> admin@ecopoint.app | Admin123*
       </div>
 
     </div>
@@ -151,5 +169,34 @@
 
 </div>
 
+<!-- Script interactivo de autenticación y visualización de contraseñas -->
+<script>
+function togglePasswordVisibility(btn) {
+  var wrapper = btn.closest('.password-wrapper');
+  if (!wrapper) return;
+  var input = wrapper.querySelector('input');
+  if (!input) return;
+
+  var isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+
+  var eyeOpen = btn.querySelector('.eye-open');
+  var eyeClosed = btn.querySelector('.eye-closed');
+  if (eyeOpen && eyeClosed) {
+    if (isPass) {
+      eyeOpen.style.display = 'none';
+      eyeClosed.style.display = 'block';
+      btn.title = 'Ocultar contraseña';
+      btn.setAttribute('aria-label', 'Ocultar contraseña');
+    } else {
+      eyeOpen.style.display = 'block';
+      eyeClosed.style.display = 'none';
+      btn.title = 'Mostrar contraseña';
+      btn.setAttribute('aria-label', 'Mostrar contraseña');
+    }
+  }
+}
+</script>
+<script src="<?= asset('js/auth.js') ?>?v=<?= time() ?>"></script>
 </body>
 </html>

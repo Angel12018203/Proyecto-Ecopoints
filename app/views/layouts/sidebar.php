@@ -19,14 +19,9 @@ $currentRole = currentRole();
 $activeNav = $activeNav ?? 'inicio';
 ?>
 <aside id="sidebar">
-  <!-- Logotipo Principal -->
-  <a href="<?= url($currentRole) ?>" class="s-logo" title="EcoPoints">
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
-      <rect width="30" height="30" rx="9" fill="#087A3D"/>
-      <path d="M15 5C8 9.5 8 17 8 17C8 20.866 11.134 24 15 24C18.866 24 22 20.866 22 17C22 9.5 15 5 15 5Z" fill="white" opacity=".92"/>
-      <path d="M15 9V22" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M11.5 14L15 10.5L18.5 14" stroke="#087A3D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+  <!-- Logotipo Principal Oficial -->
+  <a href="<?= url($currentRole) ?>" class="s-logo" title="EcoPoints" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+    <img src="<?= asset('img/logo-transparente.png') ?>" alt="EcoPoint" style="height:32px;width:auto;object-fit:contain;border-radius:6px;" onerror="this.onerror=null;this.src='<?= asset('img/logo-isotipo.jpg') ?>';" />
     <span class="s-logo-text"><span class="eco">Eco</span><span class="pt">point</span></span>
   </a>
 
@@ -82,6 +77,28 @@ $activeNav = $activeNav ?? 'inicio';
       <a href="#mis-solicitudes" class="ni" onclick="alert('Próximamente'); return false;">
         <svg viewBox="0 0 20 20" fill="none"><path d="M10 2.5L12.5 6.5H14.5L11.5 1.5H8.5L5.5 6.5H7.5L10 2.5Z" fill="currentColor"/></svg>
         Mis Solicitudes
+      </a>
+    <?php elseif ($currentRole === 'administrador' || $currentRole === 'admin'): ?>
+      <a href="<?= url('admin') ?>" class="ni <?= $activeNav === 'admin_dashboard' ? 'active' : '' ?>">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+        Dashboard Global
+      </a>
+      <a href="#recicladores" class="ni" onclick="alert('60 Recicladores activos caracterizados.'); return false;">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M10 9C11.6569 9 13 7.65685 13 6C13 4.34315 11.6569 3 10 3C8.34315 3 7 4.34315 7 6C7 7.65685 8.34315 9 10 9Z" stroke="currentColor" stroke-width="1.5"/><path d="M4 17C4 13.6863 6.68629 11 10 11C13.3137 11 16 13.6863 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Recicladores (60)
+      </a>
+      <a href="#entregas" class="ni" onclick="alert('6.377 Entregas validadas en el histórico.'); return false;">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="9" width="14" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M1 9L10 3L19 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Entregas (6.377)
+      </a>
+      <a href="#canjes" class="ni" onclick="alert('1.380 Canjes de beneficios registrados.'); return false;">
+        <svg viewBox="0 0 20 20" fill="none"><rect x="3" y="8" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M1 8H19V11H1V8Z" stroke="currentColor" stroke-width="1.5"/><path d="M10 8V18" stroke="currentColor" stroke-width="1.5"/></svg>
+        Canjes (1.380)
+      </a>
+      <hr class="s-div">
+      <a href="#mineria" class="ni" onclick="alert('Vista SQL vw_diccionario_ecopoints_mensual activa con 9 variables oficiales.'); return false;">
+        <svg viewBox="0 0 20 20" fill="none"><path d="M3 17V10M8 17V4M13 17V8M18 17V13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Minería de Datos
       </a>
     <?php else: ?>
       <a href="<?= url('centro-acopio') ?>" class="ni active">

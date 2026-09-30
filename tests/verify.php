@@ -86,12 +86,19 @@ assertTest("Generación de token CSRF (longitud 64 caracteres hex)", strlen($tok
 assertTest("verify_csrf valida token legítimo con hash_equals", verify_csrf($token1) === true);
 assertTest("verify_csrf rechaza token falso o manipulado", verify_csrf('token_falso_atacante_12345') === false);
 
-// TEST 6: Escape contra ataques XSS
+// TEST 6: Escape contra ataques XSS y Sanitización UTF-8
 $maliciousInput = '<script>alert("Ataque XSS");</script>';
 $escaped = h($maliciousInput);
 assertTest("Helper h() neutraliza etiquetas script peligrosas", strpos($escaped, '<script>') === false && strpos($escaped, '&lt;script&gt;') !== false);
 
-// TEST 7: Intento de Registro con Correo Duplicado (Debe rechazar)
+// TEST 7: Normalización de Caracteres Especiales (Tildes, Eñes, UTF-8)
+$rawMoji = 'CartÃ³n y PlÃ¡stico en BogotÃ¡';
+$sanitizedMoji = h($rawMoji);
+assertTest("Helper h() repara automáticamente caracteres dobles o mojibake ('Cartón y Plástico en Bogotá')", $sanitizedMoji === 'Cartón y Plástico en Bogotá');
+$catMateriales = $pdo->query("SELECT nombre FROM materiales WHERE id_material IN (1, 3)")->fetchAll(PDO::FETCH_COLUMN);
+assertTest("Base de datos almacena materiales con tildes nativas limpias ('Cartón', 'Plástico')", in_array('Cartón', $catMateriales, true) && in_array('Plástico', $catMateriales, true));
+
+// TEST 8: Intento de Registro con Correo Duplicado (Debe rechazar)
 $duplicateCaught = false;
 try {
     $usuarioModel->create([
@@ -197,6 +204,25 @@ assertTest("loginUser() establece usuario autenticado en sesión", isAuthenticat
 assertTest("currentUser() retorna datos de Carlos Rodríguez", currentUser()['correo'] === 'reciclador@ecopoint.app');
 assertTest("hasRole('reciclador') retorna true", hasRole('reciclador') === true);
 assertTest("hasRole('ciudadano') retorna false para cuenta de reciclador", hasRole('ciudadano') === false);
+
+// TEST 12: Verificación de Usuario Administrador y Panel de Control
+$adminUser = $usuarioModel->findByEmail('admin@ecopoint.app');
+assertTest("Usuario semilla 'admin@ecopoint.app' existe en la BD con rol administrador (#4)", $adminUser !== null && (int)$adminUser['id_rol'] === 4);
+assertTest("Contraseña de administrador 'Admin123*' autentica con BCRYPT", Usuario::verifyPassword('Admin123*', $adminUser['password']));
+
+loginUser($adminUser);
+assertTest("Sesión iniciada como Administrador", hasRole('administrador') === true);
+try {
+    require_once APP_PATH . 'controllers/AdminController.php';
+    $adminCtrl = new AdminController();
+    ob_start();
+    $adminCtrl->dashboard();
+    $adminHtml = ob_get_clean();
+    assertTest("AdminController->dashboard() ejecuta KPIs, analítica y diccionario sin errores", strlen($adminHtml) > 5000);
+} catch (Throwable $e) {
+    ob_end_clean();
+    assertTest("Fallo en AdminController->dashboard(): " . $e->getMessage(), false);
+}
 
 logoutUser();
 assertTest("logoutUser() destruye la sesión y limpia credenciales", isAuthenticated() === false && currentUser() === null);

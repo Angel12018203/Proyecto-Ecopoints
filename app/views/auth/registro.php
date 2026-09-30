@@ -11,7 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Estilos del Sistema de Diseño -->
-  <link rel="stylesheet" href="<?= asset('css/styles.css') ?>" />
+  <link rel="stylesheet" href="<?= asset('css/styles.css') ?>?v=<?= time() ?>" />
+  
+  <!-- Favicon e Isotipo Oficial EcoPoints -->
+  <link rel="icon" type="image/jpeg" href="<?= asset('img/logo-isotipo.jpg') ?>" />
   <style>
     .role-cards-container {
       display: grid;
@@ -65,7 +68,9 @@
       🌿
     </div>
     <div style="position:relative;text-align:center;">
-      <div style="font-size:1.8rem;font-weight:800;margin-bottom:12px;">EcoPoints</div>
+      <div style="display:flex;justify-content:center;margin-bottom:24px;">
+        <img src="<?= asset('img/logo-contrapuesto.jpg') ?>" alt="EcoPoints" style="width:240px;max-width:100%;height:auto;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.18);display:block;" onerror="this.onerror=null;this.src='<?= asset('img/logo-transparente.png') ?>';" />
+      </div>
       <div style="font-size:0.95rem;line-height:1.6;opacity:0.92;margin-bottom:28px;">
         Únete a la red digital que conecta tu esfuerzo diario con beneficios tangibles.
       </div>
@@ -80,11 +85,14 @@
   <div style="flex:1;overflow-y:auto;display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#FAFCFA;">
     <div style="width:100%;max-width:540px;">
 
-      <div style="margin-bottom:20px;">
-        <div style="font-size:1.4rem;font-weight:800;color:#1A2E22;">Crea tu cuenta en EcoPoints</div>
-        <div style="font-size:0.82rem;color:#4A6355;margin-top:2px;">
-          Selecciona tu rol en la plataforma para desplegar los campos adecuados.
+      <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size:1.4rem;font-weight:800;color:#1A2E22;">Crea tu cuenta en EcoPoints</div>
+          <div style="font-size:0.82rem;color:#4A6355;margin-top:2px;">
+            Selecciona tu rol en la plataforma para desplegar los campos adecuados.
+          </div>
         </div>
+        <img src="<?= asset('img/logo-isotipo.jpg') ?>" alt="EcoPoint" style="height:40px;width:40px;border-radius:8px;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,0.1);" />
       </div>
 
       <!-- Alerta de Errores del Servidor -->
@@ -224,11 +232,49 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
           <div class="form-group">
             <label class="form-label" for="password">Contraseña</label>
-            <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required>
+            <div class="password-wrapper" style="position:relative;display:flex;align-items:center;width:100%;">
+              <input type="password" id="password" name="password" class="form-input" placeholder="••••••••" required style="width:100%;padding-right:44px;">
+              <button 
+                type="button" 
+                class="toggle-password" 
+                onclick="togglePasswordVisibility(this)"
+                title="Mostrar contraseña" 
+                aria-label="Mostrar contraseña"
+                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:6px;color:#6B7280;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;"
+              >
+                <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label" for="password_confirm">Confirmar contraseña</label>
-            <input type="password" id="password_confirm" name="password_confirm" class="form-input" placeholder="••••••••" required>
+            <div class="password-wrapper" style="position:relative;display:flex;align-items:center;width:100%;">
+              <input type="password" id="password_confirm" name="password_confirm" class="form-input" placeholder="••••••••" required style="width:100%;padding-right:44px;">
+              <button 
+                type="button" 
+                class="toggle-password" 
+                onclick="togglePasswordVisibility(this)"
+                title="Mostrar contraseña" 
+                aria-label="Mostrar contraseña"
+                style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:6px;color:#6B7280;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;"
+              >
+                <svg class="eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;pointer-events:none;">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <svg class="eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;pointer-events:none;">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -254,7 +300,34 @@
   </div>
 </div>
 
-<!-- Script interactivo de validación y alternancia de campos -->
-<script src="<?= asset('js/auth.js') ?>"></script>
+<!-- Script interactivo de validación y visualización de contraseñas -->
+<script>
+function togglePasswordVisibility(btn) {
+  var wrapper = btn.closest('.password-wrapper');
+  if (!wrapper) return;
+  var input = wrapper.querySelector('input');
+  if (!input) return;
+
+  var isPass = input.type === 'password';
+  input.type = isPass ? 'text' : 'password';
+
+  var eyeOpen = btn.querySelector('.eye-open');
+  var eyeClosed = btn.querySelector('.eye-closed');
+  if (eyeOpen && eyeClosed) {
+    if (isPass) {
+      eyeOpen.style.display = 'none';
+      eyeClosed.style.display = 'block';
+      btn.title = 'Ocultar contraseña';
+      btn.setAttribute('aria-label', 'Ocultar contraseña');
+    } else {
+      eyeOpen.style.display = 'block';
+      eyeClosed.style.display = 'none';
+      btn.title = 'Mostrar contraseña';
+      btn.setAttribute('aria-label', 'Mostrar contraseña');
+    }
+  }
+}
+</script>
+<script src="<?= asset('js/auth.js') ?>?v=<?= time() ?>"></script>
 </body>
 </html>

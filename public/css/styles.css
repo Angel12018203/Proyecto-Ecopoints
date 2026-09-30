@@ -376,6 +376,11 @@ html, body {
   margin: 0 auto;
 }
 
+.pg-wide {
+  max-width: 100%;
+  padding: 24px 32px;
+}
+
 .ptitle {
   font-size: 1.25rem;
   font-weight: 700;
@@ -720,6 +725,45 @@ html, body {
 .form-input:focus, .form-select:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(8, 122, 61, 0.12);
+}
+
+/* ── Campo de Contraseña con Visualizador (Show / Hide Password) ── */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-wrapper .form-input {
+  padding-right: 44px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: #6B7280;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: color 0.15s, background-color 0.15s;
+}
+
+.toggle-password:hover {
+  color: var(--green);
+  background-color: var(--green-light);
+}
+
+.toggle-password svg {
+  display: block;
+  pointer-events: none;
 }
 
 .alert-error {

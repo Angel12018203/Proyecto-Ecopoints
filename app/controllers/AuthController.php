@@ -337,6 +337,10 @@ class AuthController extends Controller {
      */
     private function redirectByRole(?string $rol): void {
         switch ($rol) {
+            case 'administrador':
+            case 'admin':
+                $this->redirect('admin');
+                break;
             case 'ciudadano':
                 $this->redirect('ciudadano');
                 break;

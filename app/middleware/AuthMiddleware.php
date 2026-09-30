@@ -46,6 +46,13 @@ class AuthMiddleware {
     }
 
     /**
+     * Interceptor para rutas exclusivas de administradores.
+     */
+    public static function adminOnly(): void {
+        requireRole('administrador');
+    }
+
+    /**
      * Interceptor para rutas accesibles solo por invitados (usuarios NO autenticados),
      * como por ejemplo el Login o el Registro. Si ya están autenticados, se les
      * redirige directamente a su panel.
@@ -58,6 +65,8 @@ class AuthMiddleware {
                 $route = 'ciudadano';
             } elseif ($rol === 'centro_acopio') {
                 $route = 'centro-acopio';
+            } elseif ($rol === 'administrador' || $rol === 'admin') {
+                $route = 'admin';
             }
             header('Location: ' . url($route));
             exit;

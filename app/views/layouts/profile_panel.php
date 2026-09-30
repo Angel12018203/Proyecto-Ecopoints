@@ -36,7 +36,7 @@ $pts = number_format((int)($p['ecopuntos'] ?? 0), 0, ',', '.');
     </div>
 
     <div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
-      <img src="https://images.unsplash.com/photo-1546961342-ea5f60a193a5?w=160&h=160&fit=crop&auto=format" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.35);margin-bottom:8px;" alt="<?= h($nombreCompleto) ?>">
+      <img src="<?= asset('img/logo-isotipo.jpg') ?>" style="width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.85);margin-bottom:8px;box-shadow:0 4px 10px rgba(0,0,0,0.15);" alt="<?= h($nombreCompleto) ?>">
       <div style="font-weight:700;font-size:1.05rem;"><?= h($nombreCompleto) ?></div>
       <div style="font-size:0.72rem;opacity:0.85;text-transform:capitalize;"><?= h($user['rol']) ?> registrado</div>
       

@@ -91,4 +91,11 @@ class Database {
 
         return self::$instance;
     }
+
+    /**
+     * Alias de getConnection() para compatibilidad de nomenclatura Singleton.
+     */
+    public static function getInstance(): PDO {
+        return self::getConnection();
+    }
 }

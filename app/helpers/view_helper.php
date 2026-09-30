@@ -29,11 +29,26 @@ require_once __DIR__ . '/../config/config.php';
  * @param mixed $value Cadena o valor a escapar
  * @return string Cadena limpia e inocua para el navegador
  */
+/**
+ * Normaliza y repara cadenas con posible doble codificación UTF-8 (Mojibake).
+ * Garantiza que caracteres especiales (tildes, eñes, diéresis) se vean perfectos.
+ */
+function fix_utf8(string $str): string {
+    if (strpos($str, 'Ã') !== false) {
+        $repaired = @mb_convert_encoding($str, 'ISO-8859-1', 'UTF-8');
+        if ($repaired !== false && mb_check_encoding($repaired, 'UTF-8')) {
+            return $repaired;
+        }
+    }
+    return $str;
+}
+
 function h($value): string {
     if ($value === null) {
         return '';
     }
-    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    $str = fix_utf8((string)$value);
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
 /**

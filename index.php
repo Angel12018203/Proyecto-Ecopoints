@@ -32,6 +32,7 @@ require_once __DIR__ . '/app/controllers/AuthController.php';
 require_once __DIR__ . '/app/controllers/RecicladorController.php';
 require_once __DIR__ . '/app/controllers/CiudadanoController.php';
 require_once __DIR__ . '/app/controllers/CentroAcopioController.php';
+require_once __DIR__ . '/app/controllers/AdminController.php';
 
 // 4. Determinar la ruta solicitada
 $route = $_GET['route'] ?? $_GET['url'] ?? '';
@@ -68,6 +69,8 @@ if ($route === '') {
             $route = 'ciudadano';
         } elseif ($rol === 'centro_acopio') {
             $route = 'centro-acopio';
+        } elseif ($rol === 'administrador' || $rol === 'admin') {
+            $route = 'admin';
         }
     } else {
         $route = 'login';
@@ -120,6 +123,13 @@ switch ($route) {
     case 'centro_acopio':
     case 'centro-acopio/dashboard':
         $controller = new CentroAcopioController();
+        $controller->dashboard();
+        break;
+
+    // ── Módulo del Administrador General ──
+    case 'admin':
+    case 'admin/dashboard':
+        $controller = new AdminController();
         $controller->dashboard();
         break;
 

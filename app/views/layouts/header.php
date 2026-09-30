@@ -12,6 +12,10 @@
   
   <!-- Hoja de estilos del Sistema de Diseño EcoPoints -->
   <link rel="stylesheet" href="<?= asset('css/styles.css') ?>" />
+  
+  <!-- Favicon e Isotipo Oficial EcoPoints -->
+  <link rel="icon" type="image/jpeg" href="<?= asset('img/logo-isotipo.jpg') ?>" />
+  <link rel="apple-touch-icon" href="<?= asset('img/logo-isotipo.jpg') ?>" />
 </head>
 <body>
 <div id="app">

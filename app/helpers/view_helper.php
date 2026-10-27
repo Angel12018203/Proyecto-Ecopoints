@@ -65,6 +65,12 @@ function h($value): string {
 function url(string $route = '', array $params = []): string {
     $route = ltrim($route, '/');
     
+    // Si la ruta contiene un fragmento ancla (ej: 'reciclador#recompensas'), separarlo
+    $fragment = '';
+    if (strpos($route, '#') !== false) {
+        list($route, $fragment) = explode('#', $route, 2);
+    }
+    
     // Si la ruta está vacía, devuelve la URL raíz
     if ($route === '') {
         $url = BASE_URL;
@@ -76,6 +82,10 @@ function url(string $route = '', array $params = []): string {
     if (!empty($params)) {
         $separator = (strpos($url, '?') === false) ? '?' : '&';
         $url .= $separator . http_build_query($params);
+    }
+    
+    if ($fragment !== '') {
+        $url .= '#' . $fragment;
     }
     
     return $url;

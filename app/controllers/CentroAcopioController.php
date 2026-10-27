@@ -4,14 +4,8 @@
  * CONTROLADOR: CENTRO DE ACOPIO (Recepción y Validación Oficial)
  * ============================================================================
  * 
- * ¿QUÉ HACE ESTE CONTROLADOR?
- * Administra el panel de operaciones del centro de acopio:
- * - Panel de bienvenida con los datos del centro y responsable.
- * - Información sobre entregas pendientes de pesaje y validación oficial.
- * - Registro de pesaje certificado y acreditación de Ecopoints.
- * 
- * CONTROL DE ACCESO:
- * Protegido con `AuthMiddleware::centroAcopioOnly()`.
+ * Administra el panel de operaciones del centro de acopio con métricas
+ * reales de entregas validadas y pesaje en MySQL.
  */
 
 require_once __DIR__ . '/Controller.php';
@@ -28,16 +22,19 @@ class CentroAcopioController extends Controller {
     }
 
     /**
-     * Muestra el panel principal del centro de acopio.
+     * Muestra el panel principal del centro de acopio con datos reales de la BD.
      */
     public function dashboard(): void {
         $user = currentUser();
         $perfil = $this->centroModel->findByUserId((int)$user['id_usuario']);
+        $idCentro = (int)($perfil['id_centro'] ?? 0);
+        $metricas = $this->centroModel->getMetricas($idCentro);
 
         $this->view('centro_acopio/dashboard', [
             'titulo'    => 'Centro de Acopio — EcoPoints',
             'user'      => $user,
             'perfil'    => $perfil,
+            'metricas'  => $metricas,
             'activeNav' => 'inicio'
         ]);
     }

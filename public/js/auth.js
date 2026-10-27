@@ -3,20 +3,43 @@
  * JAVASCRIPT: VALIDACIÓN Y COMPORTAMIENTO DE AUTENTICACIÓN (auth.js)
  * ============================================================================
  * 
- * ¿QUÉ HACE ESTE SCRIPT?
- * 1. Gestiona la alternancia dinámica del formulario de registro:
- *    Al hacer clic en "¿Cómo deseas registrarte?" (Ciudadano, Reciclador o Centro de Acopio),
- *    muestra u oculta los campos pertinentes sin recargar la página.
- * 2. Realiza validaciones inmediatas en el navegador (UX ágil):
- *    - Comprueba que las contraseñas coincidan antes de enviar.
- *    - Comprueba longitud mínima de 6 caracteres.
- *    - Comprueba que se haya aceptado la política de tratamiento de datos.
- * 
- * NOTA DE SEGURIDAD:
- * Las validaciones de JavaScript son exclusivas para comodidad visual del usuario.
- * Todas las validaciones se repiten de forma obligatoria e inquebrantable
- * en el servidor PHP (AuthController.php).
+ * Funcionalidades:
+ * 1. Selector dinámico de roles en registro (Reciclador, Ciudadano, Centro de Acopio).
+ * 2. Visualizador y alternador de contraseñas seguro (Mostrar / Ocultar Contraseña).
+ * 3. Sanitización y filtrado estricto en tiempo real:
+ *    - Campos de solo letras (nombre, apellido): impide y filtra números y símbolos extraños.
+ *    - Campos de teléfono: impide y filtra letras, permitiendo solo dígitos y formato telefónico.
+ * 4. Validación exhaustiva pre-envío del formulario de registro.
  */
+
+// Función global única para alternar visibilidad de contraseña
+window.togglePasswordVisibility = function(btn) {
+    if (!btn) return;
+    const wrapper = btn.closest('.password-wrapper');
+    if (!wrapper) return;
+    const input = wrapper.querySelector('input');
+    if (!input) return;
+
+    const isPassword = (input.type === 'password');
+    input.type = isPassword ? 'text' : 'password';
+
+    const eyeOpen = btn.querySelector('.eye-open');
+    const eyeClosed = btn.querySelector('.eye-closed');
+
+    if (eyeOpen && eyeClosed) {
+        if (isPassword) {
+            eyeOpen.style.display = 'none';
+            eyeClosed.style.display = 'block';
+            btn.setAttribute('aria-label', 'Ocultar contraseña');
+            btn.title = 'Ocultar contraseña';
+        } else {
+            eyeOpen.style.display = 'block';
+            eyeClosed.style.display = 'none';
+            btn.setAttribute('aria-label', 'Mostrar contraseña');
+            btn.title = 'Mostrar contraseña';
+        }
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -31,11 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         roleCards.forEach(card => {
             card.addEventListener('click', () => {
                 const selectedRole = card.dataset.role;
-
-                // Actualizar valor en el campo oculto
                 roleInput.value = selectedRole;
 
-                // Actualizar estilos activos de las tarjetas
                 roleCards.forEach(c => {
                     c.classList.remove('active');
                     c.style.borderColor = '#E0EBE4';
@@ -48,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.background = '#EEF8EE';
                 card.style.boxShadow = '0 2px 8px rgba(8, 122, 61, 0.15)';
 
-                // Mostrar u ocultar bloques de campos condicionales
                 if (fieldsReciclador) fieldsReciclador.style.display = (selectedRole === 'reciclador') ? 'block' : 'none';
                 if (fieldsCiudadano) fieldsCiudadano.style.display = (selectedRole === 'ciudadano') ? 'block' : 'none';
                 if (fieldsCentro) fieldsCentro.style.display = (selectedRole === 'centro_acopio') ? 'block' : 'none';
@@ -73,10 +92,58 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. VALIDACIÓN PRE-ENVÍO DEL FORMULARIO DE REGISTRO
+    // 3. SANITIZACIÓN EN TIEMPO REAL: LETRAS VS NÚMEROS
+    // A. Campos que solo deben aceptar letras y espacios (Nombre, Apellido)
+    const letterOnlyInputs = document.querySelectorAll('#nombre, #apellido, [data-sanitize="letters-only"]');
+    letterOnlyInputs.forEach(input => {
+        // Bloquear teclas numéricas directamente
+        input.addEventListener('keypress', (e) => {
+            if (/\d/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        // Filtrar al pegar o escribir
+        input.addEventListener('input', () => {
+            // Remueve cualquier dígito o carácter no alfabético/espacio
+            input.value = input.value.replace(/[0-9]/g, '');
+        });
+    });
+
+    // B. Campos que solo deben aceptar números y formato telefónico (Teléfono)
+    const phoneInputs = document.querySelectorAll('#telefono, [data-sanitize="numbers-only"]');
+    phoneInputs.forEach(input => {
+        // Bloquear teclas alfabéticas
+        input.addEventListener('keypress', (e) => {
+            if (/[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+        // Filtrar caracteres no numéricos excepto +, -, paréntesis y espacios
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/[^0-9+\-()\s]/g, '');
+        });
+    });
+
+    // 4. CONFIGURACIÓN DEL BOTÓN TOGGLE PASSWORD (Delegación de eventos segura)
+    // No usamos onclick doble; vinculamos listener seguro evitando ejecuciones dobles
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    toggleButtons.forEach(btn => {
+        // Eliminar atributo onclick si viene en el HTML para evitar ejecución doble
+        btn.removeAttribute('onclick');
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.togglePasswordVisibility(btn);
+        });
+    });
+
+    // 5. VALIDACIÓN PRE-ENVÍO DEL FORMULARIO DE REGISTRO
     const regForm = document.getElementById('registro-form');
     if (regForm) {
         regForm.addEventListener('submit', (e) => {
+            const nombre = document.getElementById('nombre')?.value.trim() || '';
+            const apellido = document.getElementById('apellido')?.value.trim() || '';
+            const correo = document.getElementById('correo')?.value.trim() || '';
+            const telefono = document.getElementById('telefono')?.value.trim() || '';
             const pass = document.getElementById('password')?.value || '';
             const passConf = document.getElementById('password_confirm')?.value || '';
             const terms = document.getElementById('terminos')?.checked;
@@ -84,56 +151,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let errorMsg = '';
 
-            if (pass.length < 6) {
+            // Validar que nombre y apellido no tengan números y solo letras
+            if (!nombre || /\d/.test(nombre) || !/^[\p{L}\s'-]+$/u.test(nombre)) {
+                errorMsg = 'El nombre no puede contener números ni caracteres especiales.';
+            } else if (!apellido || /\d/.test(apellido) || !/^[\p{L}\s'-]+$/u.test(apellido)) {
+                errorMsg = 'El apellido no puede contener números ni caracteres especiales.';
+            } else if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                errorMsg = 'Por favor ingresa un correo electrónico válido.';
+            } else if (!telefono || /[a-zA-Z]/.test(telefono) || telefono.replace(/\D/g, '').length < 7) {
+                errorMsg = 'El teléfono no puede contener letras y debe tener al menos 7 dígitos.';
+            } else if (pass.length < 6) {
                 errorMsg = 'La contraseña debe tener al menos 6 caracteres.';
             } else if (pass !== passConf) {
-                errorMsg = 'Las contraseñas no coinciden. Verifícalas.';
+                errorMsg = 'Las contraseñas no coinciden. Por favor verifícalas.';
             } else if (!terms) {
                 errorMsg = 'Debes aceptar la política de tratamiento de datos personales para continuar.';
             }
 
             if (errorMsg) {
-                e.preventDefault(); // Detener el envío del formulario
+                e.preventDefault();
                 if (errorDiv) {
-                    errorDiv.innerHTML = errorMsg;
+                    errorDiv.innerHTML = '⚠️ ' + errorMsg;
                     errorDiv.style.display = 'block';
                     errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
                     alert(errorMsg);
                 }
+            } else if (errorDiv) {
+                errorDiv.style.display = 'none';
             }
         });
     }
 
-    // 4. VISUALIZADOR DE CONTRASEÑAS (Mostrar / Ocultar Contraseña)
-    const toggleButtons = document.querySelectorAll('.toggle-password');
-    toggleButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const wrapper = btn.closest('.password-wrapper');
-            if (!wrapper) return;
-            const input = wrapper.querySelector('input');
-            if (!input) return;
+    // 5. CONTROL DEL MODAL DE POLÍTICA DE TRATAMIENTO DE DATOS (LEY 1581 DE 2012)
+    const btnAbrirPolitica = document.getElementById('btn-abrir-politica');
+    const modalPolitica = document.getElementById('modal-politica-privacidad');
+    const btnCerrarPolitica = document.getElementById('btn-cerrar-politica');
+    const btnAceptarPolitica = document.getElementById('btn-entendido-politica');
+    const checkboxTerminos = document.getElementById('terminos');
 
-            const isPassword = input.type === 'password';
-            input.type = isPassword ? 'text' : 'password';
+    if (btnAbrirPolitica && modalPolitica) {
+        const abrirModalPolitica = (e) => {
+            if (e) e.preventDefault();
+            modalPolitica.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        };
 
-            const eyeOpen = btn.querySelector('.eye-open');
-            const eyeClosed = btn.querySelector('.eye-closed');
+        const cerrarModalPolitica = () => {
+            modalPolitica.style.display = 'none';
+            document.body.style.overflow = '';
+        };
 
-            if (eyeOpen && eyeClosed) {
-                if (isPassword) {
-                    eyeOpen.style.display = 'none';
-                    eyeClosed.style.display = 'block';
-                    btn.setAttribute('aria-label', 'Ocultar contraseña');
-                    btn.title = 'Ocultar contraseña';
-                } else {
-                    eyeOpen.style.display = 'block';
-                    eyeClosed.style.display = 'none';
-                    btn.setAttribute('aria-label', 'Mostrar contraseña');
-                    btn.title = 'Mostrar contraseña';
+        btnAbrirPolitica.addEventListener('click', abrirModalPolitica);
+
+        if (btnCerrarPolitica) {
+            btnCerrarPolitica.addEventListener('click', cerrarModalPolitica);
+        }
+
+        if (btnAceptarPolitica) {
+            btnAceptarPolitica.addEventListener('click', () => {
+                if (checkboxTerminos) {
+                    checkboxTerminos.checked = true;
                 }
+                cerrarModalPolitica();
+            });
+        }
+
+        modalPolitica.addEventListener('click', (e) => {
+            if (e.target === modalPolitica) {
+                cerrarModalPolitica();
             }
         });
-    });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modalPolitica.style.display === 'flex') {
+                cerrarModalPolitica();
+            }
+        });
+    }
 });
+

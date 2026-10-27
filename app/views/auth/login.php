@@ -170,33 +170,6 @@
 </div>
 
 <!-- Script interactivo de autenticación y visualización de contraseñas -->
-<script>
-function togglePasswordVisibility(btn) {
-  var wrapper = btn.closest('.password-wrapper');
-  if (!wrapper) return;
-  var input = wrapper.querySelector('input');
-  if (!input) return;
-
-  var isPass = input.type === 'password';
-  input.type = isPass ? 'text' : 'password';
-
-  var eyeOpen = btn.querySelector('.eye-open');
-  var eyeClosed = btn.querySelector('.eye-closed');
-  if (eyeOpen && eyeClosed) {
-    if (isPass) {
-      eyeOpen.style.display = 'none';
-      eyeClosed.style.display = 'block';
-      btn.title = 'Ocultar contraseña';
-      btn.setAttribute('aria-label', 'Ocultar contraseña');
-    } else {
-      eyeOpen.style.display = 'block';
-      eyeClosed.style.display = 'none';
-      btn.title = 'Mostrar contraseña';
-      btn.setAttribute('aria-label', 'Mostrar contraseña');
-    }
-  }
-}
-</script>
 <script src="<?= asset('js/auth.js') ?>?v=<?= time() ?>"></script>
 </body>
 </html>

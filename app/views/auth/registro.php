@@ -140,22 +140,22 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="form-group">
             <label class="form-label" for="nombre">Nombre</label>
-            <input type="text" id="nombre" name="nombre" class="form-input" placeholder="Ej: Carlos" value="<?= h($old['nombre'] ?? '') ?>" required>
+            <input type="text" id="nombre" name="nombre" class="form-input" placeholder="Ej: Carlos" value="<?= h($old['nombre'] ?? '') ?>" required data-sanitize="letters-only" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]{2,80}" title="Solo se permiten letras y espacios (sin números)">
           </div>
           <div class="form-group">
             <label class="form-label" for="apellido">Apellido</label>
-            <input type="text" id="apellido" name="apellido" class="form-input" placeholder="Ej: Rodríguez" value="<?= h($old['apellido'] ?? '') ?>" required>
+            <input type="text" id="apellido" name="apellido" class="form-input" placeholder="Ej: Rodríguez" value="<?= h($old['apellido'] ?? '') ?>" required data-sanitize="letters-only" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]{2,80}" title="Solo se permiten letras y espacios (sin números)">
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="form-group">
             <label class="form-label" for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="correo" class="form-input" placeholder="carlos@correo.com" value="<?= h($old['correo'] ?? '') ?>" required>
+            <input type="email" id="correo" name="correo" class="form-input" placeholder="carlos@correo.com" value="<?= h($old['correo'] ?? '') ?>" required autocomplete="email">
           </div>
           <div class="form-group">
             <label class="form-label" for="telefono">Teléfono / Celular</label>
-            <input type="tel" id="telefono" name="telefono" class="form-input" placeholder="311 555 4321" value="<?= h($old['telefono'] ?? '') ?>" required>
+            <input type="tel" id="telefono" name="telefono" class="form-input" placeholder="311 555 4321" value="<?= h($old['telefono'] ?? '') ?>" required data-sanitize="numbers-only" inputmode="tel" pattern="[0-9\+\-\s\(\)]{7,20}" title="Solo se permiten números (sin letras, mínimo 7 dígitos)">
           </div>
         </div>
 
@@ -282,7 +282,7 @@
         <label style="display:flex;align-items:flex-start;gap:10px;margin:16px 0 22px;cursor:pointer;">
           <input type="checkbox" id="terminos" name="terminos" checked style="margin-top:3px;accent-color:#087A3D;" required>
           <span style="font-size:0.75rem;color:#4A6355;line-height:1.45;">
-            Acepto el tratamiento de mis datos personales según la <a href="#" style="color:#087A3D;font-weight:600;">política de privacidad</a> de EcoPoints.
+            Acepto el tratamiento de mis datos personales según la <a href="javascript:void(0)" id="btn-abrir-politica" style="color:#087A3D;font-weight:700;text-decoration:underline;cursor:pointer;">política de privacidad</a> de EcoPoints.
           </span>
         </label>
 
@@ -300,34 +300,134 @@
   </div>
 </div>
 
-<!-- Script interactivo de validación y visualización de contraseñas -->
-<script>
-function togglePasswordVisibility(btn) {
-  var wrapper = btn.closest('.password-wrapper');
-  if (!wrapper) return;
-  var input = wrapper.querySelector('input');
-  if (!input) return;
+<!-- ========================================================================= -->
+<!-- MODAL: POLÍTICA DE PRIVACIDAD Y TRATAMIENTO DE DATOS (LEY 1581 DE 2012)   -->
+<!-- ========================================================================= -->
+<div id="modal-politica-privacidad" style="display:none;position:fixed;inset:0;background:rgba(10,35,20,0.68);backdrop-filter:blur(4px);z-index:99999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;">
+  <div style="background:#FFFFFF;border-radius:20px;max-width:740px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,0.28);border:1px solid #E0EBE4;overflow:hidden;animation:slideUpModal 0.25s ease;">
+    
+    <!-- Encabezado con Identidad Oficial EcoPoints -->
+    <div style="background:linear-gradient(135deg,#065C2D 0%,#087A3D 55%,#15803D 100%);padding:22px 28px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;position:relative;flex-shrink:0;">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <span style="background:rgba(255,255,255,0.22);padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">
+            🇨🇴 Marco Legal Colombiano
+          </span>
+          <span style="background:#22C55E;color:#064E22;padding:3px 9px;border-radius:20px;font-size:0.7rem;font-weight:700;">
+            Ley 1581 de 2012
+          </span>
+        </div>
+        <h3 style="font-size:1.25rem;font-weight:800;margin:0;letter-spacing:-0.3px;">
+          Política de Tratamiento y Protección de Datos Personales
+        </h3>
+        <p style="margin:4px 0 0;font-size:0.82rem;opacity:0.92;">
+          EcoPoints — Plataforma para la Gestión y Trazabilidad del Reciclaje en Bogotá D.C.
+        </p>
+      </div>
+      <button type="button" id="btn-cerrar-politica" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:background 0.2s;flex-shrink:0;" title="Cerrar política">
+        ✕
+      </button>
+    </div>
 
-  var isPass = input.type === 'password';
-  input.type = isPass ? 'text' : 'password';
+    <!-- Contenido Scrollable con los Lineamientos de la Ley 1581 de 2012 -->
+    <div style="padding:26px 28px;overflow-y:auto;font-size:0.86rem;color:#1A2E22;line-height:1.68;font-family:'Poppins',sans-serif;">
+      
+      <!-- Aviso de Autorización Previa e Informada -->
+      <div style="background:#EEF8EE;border-left:4px solid #087A3D;padding:14px 18px;border-radius:0 12px 12px 0;margin-bottom:20px;font-size:0.84rem;color:#065C2D;">
+        <strong>📜 Autorización Previa, Expresa e Informada:</strong><br>
+        En cumplimiento de la <strong>Ley Estatutaria 1581 de 2012</strong> (Régimen General de Protección de Datos Personales) y el <strong>Decreto 1377 de 2013</strong> de la República de Colombia, al registrarte en <strong>EcoPoints</strong> autorizas libre, previa, expresa e informadamente el tratamiento de tus datos personales conforme a los lineamientos aquí establecidos.
+      </div>
 
-  var eyeOpen = btn.querySelector('.eye-open');
-  var eyeClosed = btn.querySelector('.eye-closed');
-  if (eyeOpen && eyeClosed) {
-    if (isPass) {
-      eyeOpen.style.display = 'none';
-      eyeClosed.style.display = 'block';
-      btn.title = 'Ocultar contraseña';
-      btn.setAttribute('aria-label', 'Ocultar contraseña');
-    } else {
-      eyeOpen.style.display = 'block';
-      eyeClosed.style.display = 'none';
-      btn.title = 'Mostrar contraseña';
-      btn.setAttribute('aria-label', 'Mostrar contraseña');
-    }
-  }
+      <!-- 1. Responsable del Tratamiento -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>🏢</span> 1. Responsable del Tratamiento
+      </h4>
+      <p style="margin:0 0 14px;color:#4A6355;">
+        El responsable del tratamiento de los datos personales es <strong>EcoPoints Colombia</strong>, entidad que gestiona la red digital de reciclaje inclusivo y economía circular en el Distrito Capital de Bogotá. Para cualquier petición, queja, reclamo o consulta relacionada con tus datos personales, puedes contactarnos a través del correo oficial: <a href="mailto:privacidad@ecopoints.com.co" style="color:#087A3D;font-weight:700;">privacidad@ecopoints.com.co</a>.
+      </p>
+
+      <!-- 2. Finalidades Legítimas del Tratamiento -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>🎯</span> 2. Finalidades del Tratamiento de la Información
+      </h4>
+      <p style="margin:0 0 10px;color:#4A6355;">
+        Los datos recolectados se destinan exclusivamente a propósitos operativos, ambientales y de trazabilidad en la plataforma:
+      </p>
+      <ul style="margin:0 0 14px;padding-left:22px;color:#4A6355;">
+        <li><strong>Creación y gestión de cuentas:</strong> Registro, autenticación y habilitación de perfiles según el rol seleccionado (Reciclador, Ciudadano o Centro de Acopio).</li>
+        <li><strong>Coordinación logística y de rutas:</strong> Conectar a los recicladores de oficio con las solicitudes domiciliarias de recolección en las 20 localidades de Bogotá D.C.</li>
+        <li><strong>Certificación y pesaje de materiales:</strong> Registrar el ingreso fidedigno de kilogramos en los centros de acopio y validar la entrega física.</li>
+        <li><strong>Liquidación y canje de EcoPoints:</strong> Calcular, emitir y acreditar los puntos de recompensa ganados por el reciclaje efectivo, permitiendo su canje transparente por beneficios.</li>
+        <li><strong>Monitoreo del impacto ambiental:</strong> Calcular métricas agregadas de mitigación de CO₂, ahorro de agua y energía, sin divulgar datos confidenciales individuales.</li>
+        <li><strong>Seguridad y prevención de fraudes:</strong> Prevenir suplantaciones, verificar registros duplicados y cumplir con las órdenes de las autoridades competentes.</li>
+      </ul>
+
+      <!-- 3. Tratamiento de Datos según el Rol del Titular -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>👥</span> 3. Información Tratada por Cada Rol
+      </h4>
+      <ul style="margin:0 0 14px;padding-left:22px;color:#4A6355;">
+        <li><strong>Reciclador de Oficio:</strong> Nombre, teléfono de contacto, localidad, zona habitual de recolección, medio de transporte y disponibilidad horaria.</li>
+        <li><strong>Ciudadano:</strong> Nombre, correo electrónico, teléfono, localidad, dirección domiciliaria y observaciones para el retiro del material reciclable.</li>
+        <li><strong>Centro de Acopio:</strong> Razón social o nombre del establecimiento, dirección física, horario de atención y tipos de materiales recibidos.</li>
+      </ul>
+
+      <!-- 4. Derechos de los Titulares (Habeas Data) -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>🛡️</span> 4. Derechos del Titular (Artículo 8, Ley 1581 de 2012)
+      </h4>
+      <p style="margin:0 0 10px;color:#4A6355;">
+        En concordancia con el principio de Habeas Data constitucional, como titular tienes derecho a:
+      </p>
+      <ul style="margin:0 0 14px;padding-left:22px;color:#4A6355;">
+        <li><strong>Conocer, actualizar y rectificar</strong> tus datos personales frente a información inexacta, incompleta o fraccionada.</li>
+        <li><strong>Solicitar prueba</strong> de la autorización otorgada a EcoPoints para el tratamiento de tus datos.</li>
+        <li><strong>Ser informado</strong> previa solicitud respecto del uso que se le ha dado a tus datos personales.</li>
+        <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC) por infracciones a la normatividad vigente.</li>
+        <li><strong>Revocar la autorización o solicitar la supresión</strong> del dato cuando no se respeten los principios, derechos y garantías constitucionales.</li>
+        <li><strong>Acceder gratuitamente</strong> a tus datos personales que hayan sido objeto de tratamiento.</li>
+      </ul>
+
+      <!-- 5. Procedimiento para el Ejercicio de Derechos -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>✉️</span> 5. Procedimiento de Consultas y Reclamos (Art. 14 y 15, Ley 1581)
+      </h4>
+      <p style="margin:0 0 14px;color:#4A6355;">
+        Podrás radicar tus consultas o solicitudes de supresión enviando un mensaje a <strong style="color:#087A3D;">privacidad@ecopoints.com.co</strong>. Las consultas serán atendidas en un plazo máximo de diez (10) días hábiles, y los reclamos en quince (15) días hábiles, prorrogables conforme a los términos de la ley.
+      </p>
+
+      <!-- 6. Seguridad y Confidencialidad -->
+      <h4 style="font-size:0.96rem;font-weight:800;color:#087A3D;margin:18px 0 6px;display:flex;align-items:center;gap:6px;">
+        <span>🔐</span> 6. Medidas de Seguridad de la Información
+      </h4>
+      <p style="margin:0;color:#4A6355;">
+        EcoPoints implementa medidas técnicas de seguridad de vanguardia: las contraseñas se almacenan mediante algoritmos criptográficos unidireccionales (BCrypt con salting), las solicitudes web se validan mediante tokens anti-CSRF, y los experimentos de modelado y simulación operan de manera aislada sin exponer registros personales sensibles.
+      </p>
+
+    </div>
+
+    <!-- Pie del Modal con Botón de Confirmación -->
+    <div style="background:#F8FAFC;border-top:1px solid #E0EBE4;padding:16px 28px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-shrink:0;">
+      <span style="font-size:0.75rem;color:#4A6355;">
+        Ley 1581 de 2012 • Superintendencia de Industria y Comercio (Colombia)
+      </span>
+      <button type="button" id="btn-entendido-politica" class="btn btn-p" style="padding:10px 22px;background:#087A3D;border-radius:10px;font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;">
+        ✓ He leído y acepto la política
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+@keyframes slideUpModal {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
-</script>
+</style>
+
+<!-- Script interactivo de validación y visualización de contraseñas -->
 <script src="<?= asset('js/auth.js') ?>?v=<?= time() ?>"></script>
 </body>
 </html>
+

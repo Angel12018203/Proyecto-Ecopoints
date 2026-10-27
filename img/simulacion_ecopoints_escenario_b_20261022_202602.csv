@@ -1,0 +1,19 @@
+﻿"# REPORTE DE MODELADO Y SIMULACIÓN MONTE CARLO - ECOPOINTS"
+"# Escenario:","Escenario B: Incremento de la Demanda (+75%)"
+"# Duración (Días):",7
+"# Recicladores en Ruta:",30
+"# Puestos de Pesaje en Acopio:",2
+"# Solicitudes/Día:",70
+"# Semilla Base:",42
+
+Replica,Semilla,Solicitudes_Generadas,Solicitudes_Completadas,Solicitudes_Pendientes,Porcentaje_Atendidas,Kg_Totales_Recuperados,EcoPoints_Regla_Directa,EcoPoints_ML_Proyectados,Espera_Reciclador_Min,Espera_Pesaje_Min,Tiempo_Ciclo_Total_Min
+1,42,494,478,16,96.8%,9718.8,113593,645,0,18.9,90.9
+2,143,495,483,12,97.6%,9491.9,109035.9,627.2,0,24.6,97.4
+3,244,532,525,7,98.7%,10245.7,116574.4,627.2,1.9,44.7,118.6
+4,345,481,474,7,98.5%,9353.7,112069.8,651.2,0,21,93.2
+5,446,494,484,10,98%,9416.9,108546.9,644.6,0,19,91.3
+6,547,501,486,15,97%,9876.2,116219.1,651.2,0,22.7,94.6
+7,648,518,508,10,98.1%,9986.2,117707.6,644.4,0,26,98.1
+8,749,462,450,12,97.4%,8966.6,108359,651.2,0,13.1,84.7
+9,850,455,443,12,97.4%,8878.6,103063.7,644.6,0,12.6,84.6
+10,951,482,468,14,97.1%,9368.3,108510.4,651.2,0,17.3,89.4

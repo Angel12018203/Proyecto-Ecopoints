@@ -89,3 +89,23 @@ if (!defined('BASE_URL')) {
 define('ROOT_PATH', dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR);
 define('APP_PATH', ROOT_PATH . 'app' . DIRECTORY_SEPARATOR);
 define('PUBLIC_PATH', ROOT_PATH . 'public' . DIRECTORY_SEPARATOR);
+
+// 8. Configuración del Módulo de Minería de Datos y Modelos ML
+define('PYTHON_BIN', getenv('ECOPOINTS_PYTHON_BIN') ?: (
+    file_exists('C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\.venv\\Scripts\\python.exe')
+        ? 'C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\.venv\\Scripts\\python.exe'
+        : 'python'
+));
+
+define('ML_MODELS_PATH', getenv('ECOPOINTS_MODELOS_DIR') ?: (
+    file_exists('C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\11_modelos_guardados')
+        ? 'C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\11_modelos_guardados'
+        : ROOT_PATH . 'ml_models'
+));
+
+define('ML_REGLAS_PATH', getenv('ECOPOINTS_REGLAS_PATH') ?: (
+    file_exists('C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\09_reglas_asociacion\\reglas_asociacion_descubiertas.csv')
+        ? 'C:\\Users\\rueda\\Desktop\\Proyecto_Integrador_X\\Ecopoints_Estructura\\09_reglas_asociacion\\reglas_asociacion_descubiertas.csv'
+        : ''
+));
+

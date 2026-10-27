@@ -182,14 +182,27 @@ class AuthController extends Controller {
         // 3. Validaciones generales en el servidor
         $errores = [];
 
-        if (empty($nombre)) $errores[] = "El nombre es obligatorio.";
-        if (empty($apellido)) $errores[] = "El apellido es obligatorio.";
+        if (empty($nombre)) {
+            $errores[] = "El nombre es obligatorio.";
+        } elseif (preg_match('/\d/', $nombre) || !preg_match('/^[\p{L}\s\'-]{2,80}$/u', $nombre)) {
+            $errores[] = "El nombre solo puede contener letras y espacios (no se permiten números).";
+        }
+
+        if (empty($apellido)) {
+            $errores[] = "El apellido es obligatorio.";
+        } elseif (preg_match('/\d/', $apellido) || !preg_match('/^[\p{L}\s\'-]{2,80}$/u', $apellido)) {
+            $errores[] = "El apellido solo puede contener letras y espacios (no se permiten números).";
+        }
         
         if (empty($correo) || !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
             $errores[] = "Debes ingresar un correo electrónico válido.";
         }
 
-        if (empty($telefono)) $errores[] = "El número de teléfono es obligatorio.";
+        if (empty($telefono)) {
+            $errores[] = "El número de teléfono es obligatorio.";
+        } elseif (preg_match('/[a-zA-Z]/', $telefono) || !preg_match('/^[0-9\+\-\s\(\)]{7,20}$/', $telefono) || strlen(preg_replace('/\D/', '', $telefono)) < 7) {
+            $errores[] = "El número de teléfono solo puede contener dígitos (no se permiten letras) y debe tener al menos 7 dígitos.";
+        }
         
         if (strlen($password) < 6) {
             $errores[] = "La contraseña debe tener al menos 6 caracteres.";

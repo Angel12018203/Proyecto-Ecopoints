@@ -81,4 +81,32 @@ class CentroAcopio extends Model {
         $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
+
+    /**
+     * Retorna métricas reales de entregas validadas y pesaje del centro.
+     * 
+     * @param int $idCentro
+     * @return array
+     */
+    public function getMetricas(int $idCentro): array {
+        $sql = "SELECT 
+                    COUNT(*) AS total_entregas,
+                    COALESCE(SUM(cantidad_validada), 0) AS total_kg,
+                    COALESCE(SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END), 0) AS entregas_pendientes,
+                    COALESCE(SUM(CASE WHEN estado = 'Validada' THEN 1 ELSE 0 END), 0) AS entregas_validadas
+                FROM entregas 
+                WHERE id_centro = :id";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $idCentro, PDO::PARAM_INT);
+        $stmt->execute();
+        $res = $stmt->fetch();
+
+        return [
+            'total_entregas'      => (int)($res['total_entregas'] ?? 0),
+            'total_kg'            => (float)($res['total_kg'] ?? 0),
+            'entregas_pendientes' => (int)($res['entregas_pendientes'] ?? 0),
+            'entregas_validadas'  => (int)($res['entregas_validadas'] ?? 0),
+        ];
+    }
 }

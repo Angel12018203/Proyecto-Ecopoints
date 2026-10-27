@@ -33,6 +33,9 @@ require_once __DIR__ . '/app/controllers/RecicladorController.php';
 require_once __DIR__ . '/app/controllers/CiudadanoController.php';
 require_once __DIR__ . '/app/controllers/CentroAcopioController.php';
 require_once __DIR__ . '/app/controllers/AdminController.php';
+require_once __DIR__ . '/app/controllers/AnaliticaController.php';
+require_once __DIR__ . '/app/controllers/SolicitudController.php';
+require_once __DIR__ . '/app/controllers/SimulacionController.php';
 
 // 4. Determinar la ruta solicitada
 $route = $_GET['route'] ?? $_GET['url'] ?? '';
@@ -58,6 +61,12 @@ if ($route === '') {
 
 // Normalizar la ruta eliminando barras sobrantes y caracteres extraños
 $route = trim($route, '/');
+
+// Si la ruta contiene un fragmento ancla (ej: 'reciclador#recompensas'), aislar solo el slug del enrutador
+if (strpos($route, '#') !== false) {
+    $route = explode('#', $route, 2)[0];
+}
+
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // 5. Ruta por defecto cuando se accede a la raíz del proyecto
@@ -111,11 +120,72 @@ switch ($route) {
         $controller->dashboard();
         break;
 
+    case 'reciclador/solicitudes':
+    case 'reciclador/solicitudes-cercanas':
+        $controller = new RecicladorController();
+        $controller->solicitudes();
+        break;
+
+    case 'reciclador/solicitud/aceptar':
+        $controller = new RecicladorController();
+        $controller->postAceptarSolicitud();
+        break;
+
+    case 'reciclador/recolecciones':
+    case 'reciclador/mis-recolecciones':
+        $controller = new RecicladorController();
+        $controller->recolecciones();
+        break;
+
+    case 'reciclador/recoleccion/actualizar':
+        $controller = new RecicladorController();
+        $controller->postActualizarRecoleccion();
+        break;
+
+    case 'reciclador/centros':
+    case 'reciclador/centros-acopio':
+        $controller = new RecicladorController();
+        $controller->centros();
+        break;
+
+    case 'reciclador/beneficios':
+        $controller = new RecicladorController();
+        $controller->beneficios();
+        break;
+
+    case 'reciclador/beneficio/canjear':
+        $controller = new RecicladorController();
+        $controller->postCanjearBeneficio();
+        break;
+
+    case 'reciclador/impacto':
+    case 'reciclador/mi-impacto':
+        $controller = new RecicladorController();
+        $controller->impacto();
+        break;
+
     // ── Módulo del Ciudadano ──
     case 'ciudadano':
     case 'ciudadano/dashboard':
         $controller = new CiudadanoController();
         $controller->dashboard();
+        break;
+
+    // ── Módulo de Solicitudes de Recolección (Fase 2) ──
+    case 'ciudadano/solicitud/crear':
+    case 'ciudadano/solicitudes/crear':
+        $controller = new SolicitudController();
+        if ($method === 'POST') {
+            $controller->postCrear();
+        } else {
+            $controller->crear();
+        }
+        break;
+
+    case 'ciudadano/solicitudes':
+    case 'ciudadano/mis-solicitudes':
+        $controller = new SolicitudController();
+        $controller->misSolicitudes();
         break;
 
     // ── Módulo del Centro de Acopio ──
@@ -131,6 +201,48 @@ switch ($route) {
     case 'admin/dashboard':
         $controller = new AdminController();
         $controller->dashboard();
+        break;
+
+    case 'admin/recicladores/buscar':
+        $controller = new AdminController();
+        $controller->buscarRecicladores();
+        break;
+
+    case 'admin/reciclador/detalle':
+        $controller = new AdminController();
+        $controller->detalleReciclador();
+        break;
+
+    case 'admin/reciclador/analisis/actualizar':
+        $controller = new AdminController();
+        $controller->ejecutarAnalisisReciclador();
+        break;
+
+    case 'admin/analitica/predecir-puntos':
+    case 'admin/analitica/clasificar-nivel':
+    case 'admin/analitica/segmentar-reciclador':
+    case 'admin/analitica/evaluar-anomalia':
+    case 'admin/analitica/analizar-reciclador':
+    case 'admin/analitica/graficas-modelos':
+    case 'admin/analitica/reglas-asociacion':
+        $controller = new AnaliticaController();
+        $controller->proxy(substr($route, strlen('admin/analitica/')));
+        break;
+
+    // ── Módulo de Modelado y Simulación Operativa ──
+    case 'admin/simulacion':
+        $controller = new SimulacionController();
+        $controller->index();
+        break;
+
+    case 'admin/simulacion/ejecutar':
+        $controller = new SimulacionController();
+        $controller->ejecutar();
+        break;
+
+    case 'admin/simulacion/exportar':
+        $controller = new SimulacionController();
+        $controller->exportar();
         break;
 
     // ── Ruta no encontrada (404) ──

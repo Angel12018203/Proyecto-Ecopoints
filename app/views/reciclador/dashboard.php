@@ -4,18 +4,8 @@
  * VISTA: DASHBOARD DEL RECICLADOR (Actor Principal)
  * ============================================================================
  * 
- * ¿QUÉ HACE ESTA VISTA?
- * Representa la pantalla principal de trabajo del reciclador según el diseño
- * de alta fidelidad aprobado en Figma (Puntos 23, 24, 25 de requisitos):
- * 
- * 1. Saludo personalizado con su nombre real: "¡Hola, <?= h($user['nombre']) ?>! 👋"
- * 2. Tarjetas métricas dinámicas procedentes de la base de datos:
- *    - Ecopoints acumulados.
- *    - Material recuperado en kg.
- *    - Conteo de solicitudes cercanas en su localidad.
- *    - Nivel oficial calculado (EcoReciclador) con barra de progreso.
- * 3. Demostración visual de Solicitudes Cercanas (#1024, 30 kg de cartón, 800 m).
- * 4. Atajos rápidos para Mi ruta, Centros de Acopio y Beneficios.
+ * Muestra el panel principal de trabajo del reciclador con métricas reales
+ * de la base de datos MySQL, solicitudes disponibles en tiempo real y centros de acopio.
  */
 require APP_PATH . 'views/layouts/header.php';
 require APP_PATH . 'views/layouts/sidebar.php';
@@ -35,7 +25,7 @@ require APP_PATH . 'views/layouts/sidebar.php';
       <?php endif; ?>
 
       <!-- ── Hero Banner de Bienvenida ── -->
-      <div style="background:linear-gradient(135deg,#087A3D,#2E9B50);border-radius:var(--r-xl);padding:24px 28px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow);">
+      <div style="background:linear-gradient(135deg,#065C2D,#087A3D,#2E9B50);border-radius:var(--r-xl);padding:24px 28px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow);">
         <div style="position:absolute;right:0;top:0;bottom:0;width:200px;opacity:0.08;font-size:10rem;display:flex;align-items:center;justify-content:flex-end;padding-right:16px;pointer-events:none;">
           ♻️
         </div>
@@ -43,22 +33,19 @@ require APP_PATH . 'views/layouts/sidebar.php';
           ¡Hola, <?= h($user['nombre']) ?>! 👋
         </div>
         <div style="font-size:0.92rem;opacity:0.92;max-width:520px;line-height:1.55;">
-          Estas son las oportunidades de recolección disponibles cerca de ti en <strong><?= h($perfil['zona_trabajo'] ?? 'tu zona') ?></strong>. Conecta tu trabajo con nuevos materiales y convierte tu esfuerzo en beneficios.
+          Estas son las oportunidades de recolección disponibles en la plataforma para tu zona de trabajo en <strong><?= h($perfil['zona_trabajo'] ?? 'Bogotá D.C.') ?></strong>.
         </div>
         <div style="display:flex;gap:10px;margin-top:16px;">
-          <a href="#solicitudes-list" class="btn" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.35);font-size:0.78rem;">
-            📍 Ver solicitudes cercanas
-          </a>
-          <a href="#ruta" class="btn" style="background:rgba(255,255,255,0.18);color:#fff;border:1px solid rgba(255,255,255,0.35);font-size:0.78rem;" onclick="alert('Módulo de organización de rutas en desarrollo para la siguiente fase.'); return false;">
-            🗺️ Organizar mi ruta
+          <a href="#solicitudes-list" class="btn" style="background:rgba(255,255,255,0.22);color:#fff;border:1px solid rgba(255,255,255,0.4);font-size:0.8rem;text-decoration:none;">
+            📍 Ver oportunidades disponibles
           </a>
         </div>
       </div>
 
-      <!-- ── Cuadrícula de Métricas Principales (Punto 23) ── -->
+      <!-- ── Cuadrícula de Métricas Principales (Datos 100% Reales de la BD) ── -->
       <div class="g4" style="margin-bottom:24px;">
         
-        <!-- Tarjeta 1: Ecopoints -->
+        <!-- Tarjeta 1: Ecopoints Reales -->
         <div class="sh" style="background:var(--green);color:#fff;">
           <div class="dec">⭐</div>
           <div style="font-size:0.68rem;font-weight:700;opacity:0.75;letter-spacing:0.08em;margin-bottom:8px;">
@@ -68,10 +55,12 @@ require APP_PATH . 'views/layouts/sidebar.php';
             <span style="font-size:2rem;">⭐</span>
             <span class="sh-val"><?= number_format($metricas['ecopuntos'], 0, ',', '.') ?></span>
           </div>
-          <div class="sh-sub">+320 este mes</div>
+          <div class="sh-sub">
+            <?= ((int)($metricas['puntos_mes'] ?? 0) > 0) ? '+' . number_format($metricas['puntos_mes'], 0, ',', '.') . ' este mes' : 'Saldo activo acumulado' ?>
+          </div>
         </div>
 
-        <!-- Tarjeta 2: Material Recuperado -->
+        <!-- Tarjeta 2: Material Recuperado Real -->
         <div class="card cp">
           <div style="font-size:0.68rem;font-weight:700;color:#C97D3A;letter-spacing:0.08em;margin-bottom:8px;">
             MATERIAL RECUPERADO
@@ -82,30 +71,30 @@ require APP_PATH . 'views/layouts/sidebar.php';
               <div style="font-size:1.75rem;font-weight:800;line-height:1;">
                 <?= number_format($metricas['material_kg'], 1, ',', '.') ?>
               </div>
-              <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">kilogramos</div>
+              <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">kilogramos validados</div>
             </div>
           </div>
-          <div style="font-size:0.72rem;color:var(--muted);margin-top:8px;">Total histórico registrado</div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:8px;">Total histórico en base de datos</div>
         </div>
 
-        <!-- Tarjeta 3: Solicitudes Cercanas -->
+        <!-- Tarjeta 3: Solicitudes Reales Disponibles -->
         <div class="card cp">
           <div style="font-size:0.68rem;font-weight:700;color:var(--green-mid);letter-spacing:0.08em;margin-bottom:8px;">
-            SOLICITUDES CERCANAS
+            SOLICITUDES DISPONIBLES
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:1.6rem;">📍</span>
             <div>
               <div style="font-size:1.75rem;font-weight:800;line-height:1;">
-                <?= h($metricas['solicitudes_activas']) ?>
+                <?= (int)$metricas['solicitudes_activas'] ?>
               </div>
-              <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">disponibles ahora</div>
+              <div style="font-size:0.65rem;color:var(--muted);margin-top:2px;">pendientes de recolección</div>
             </div>
           </div>
-          <div style="font-size:0.72rem;color:var(--muted);margin-top:8px;">En <?= h($perfil['zona_trabajo'] ?? 'tu zona') ?></div>
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:8px;">En Bogotá D.C.</div>
         </div>
 
-        <!-- Tarjeta 4: Nivel del Reciclador -->
+        <!-- Tarjeta 4: Nivel del Reciclador Real -->
         <div class="card cp">
           <div style="font-size:0.68rem;font-weight:700;color:#B28300;letter-spacing:0.08em;margin-bottom:8px;">
             NIVEL OFICIAL
@@ -124,103 +113,124 @@ require APP_PATH . 'views/layouts/sidebar.php';
 
       </div>
 
-      <!-- ── Sección: Solicitudes Cercanas Disponibles (Punto 24 y 25) ── -->
+      <!-- ── Sección: Solicitudes Reales en Base de Datos ── -->
       <div id="solicitudes-list" style="margin-bottom:28px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
           <div>
-            <div style="font-size:1.1rem;font-weight:700;color:var(--text);">Oportunidades de recolección destacadas</div>
-            <div style="font-size:0.78rem;color:var(--muted);">Solicitudes publicadas por ciudadanos verificados cerca de tu ubicación.</div>
+            <div style="font-size:1.1rem;font-weight:700;color:var(--text);">Oportunidades de recolección disponibles</div>
+            <div style="font-size:0.78rem;color:var(--muted);">Solicitudes publicadas por ciudadanos en la plataforma.</div>
           </div>
-          <span class="bdg bg">🟢 En tiempo real</span>
-        </div>
-
-        <!-- Tarjeta de Solicitud Destacada (#1024) -->
-        <div class="card cp" style="display:flex;align-items:center;gap:18px;margin-bottom:12px;">
-          <div style="width:52px;height:52px;border-radius:12px;background:#FFF4EB;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">
-            📦
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-              <span style="font-weight:700;font-size:0.92rem;color:var(--text);">Solicitud #1024</span>
-              <span class="bdg bg">🟢 Disponible</span>
-              <span class="bdg br" style="font-size:0.62rem;">Prioridad Alta</span>
-            </div>
-            <div style="font-size:0.85rem;font-weight:600;color:#C97D3A;">
-              Cartón limpio y desarmado — 30 kg aprox.
-            </div>
-            <div style="font-size:0.75rem;color:var(--muted);display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;">
-              <span>📍 Suba Centro (800 metros)</span>
-              <span>🕐 Horario: 2:00 p.m. – 5:00 p.m.</span>
-              <span>👤 María Gómez (Ciudadana verificada)</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button class="btn btn-o btn-sm" onclick="alert('Detalle de Solicitud #1024: Cartón en portería listo para retirar.');">
-              Ver solicitud
-            </button>
-            <button class="btn btn-p btn-sm" onclick="alert('¡Recolección aceptada! Se agrega a tus recolecciones. Recuerda: los Ecopoints se otorgarán únicamente tras el pesaje y validación en el centro de acopio.');">
-              Aceptar recolección
-            </button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <a href="<?= url('reciclador/solicitudes') ?>" class="btn btn-outline" style="font-size:0.8rem;padding:6px 14px;border-radius:10px;">
+              Ver todas las solicitudes &rarr;
+            </a>
+            <span class="bdg bg">🟢 En tiempo real (MySQL)</span>
           </div>
         </div>
 
-        <!-- Tarjeta de Solicitud Secundaria (#1025) -->
-        <div class="card cp" style="display:flex;align-items:center;gap:18px;">
-          <div style="width:52px;height:52px;border-radius:12px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;">
-            🧴
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-              <span style="font-weight:700;font-size:0.92rem;color:var(--text);">Solicitud #1025</span>
-              <span class="bdg bg">🟢 Disponible</span>
+        <?php if (empty($solicitudes)): ?>
+          <div class="card" style="padding:32px 20px;text-align:center;background:#fff;border-radius:14px;border:1px dashed var(--border);">
+            <div style="font-size:2.5rem;margin-bottom:8px;">📦</div>
+            <div style="font-weight:700;font-size:0.95rem;color:var(--text);margin-bottom:4px;">
+              No hay solicitudes pendientes en este momento
             </div>
-            <div style="font-size:0.85rem;font-weight:600;color:var(--green);">
-              Plástico PET y botellas compactadas — 15 kg aprox.
-            </div>
-            <div style="font-size:0.75rem;color:var(--muted);display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;">
-              <span>📍 Suba, La Colina (1.2 km)</span>
-              <span>🕐 Horario: 3:00 p.m. – 6:00 p.m.</span>
-            </div>
+            <p style="font-size:0.8rem;color:var(--muted);margin:0 auto;max-width:440px;">
+              Cuando un ciudadano registre una solicitud de recolección desde su panel, aparecerá aquí inmediatamente con los detalles del material y ubicación.
+            </p>
           </div>
-          <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button class="btn btn-o btn-sm" onclick="alert('Detalle de Solicitud #1025');">Ver solicitud</button>
-            <button class="btn btn-p btn-sm" onclick="alert('¡Recolección aceptada!');">Aceptar recolección</button>
+        <?php else: ?>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <?php foreach ($solicitudes as $sol): ?>
+              <?php
+                $iconoMap = [
+                  'box' => '📦',
+                  'file-text' => '📄',
+                  'disc' => '🧴',
+                  'shield' => '🍾',
+                  'layers' => '🥫',
+                  'package' => '📦'
+                ];
+                $emojiMat = $iconoMap[$sol['material_icono'] ?? 'box'] ?? '♻️';
+              ?>
+              <div class="card cp" style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:#fff;border-radius:14px;border:1px solid var(--border);flex-wrap:wrap;">
+                <div style="width:50px;height:50px;border-radius:12px;background:#F0FDF4;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;border:1px solid #DCFCE7;">
+                  <?= $emojiMat ?>
+                </div>
+                <div style="flex:1;min-width:240px;">
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+                    <span style="font-weight:700;font-size:0.92rem;color:var(--text);">
+                      Solicitud #<?= str_pad((string)$sol['id_solicitud'], 5, '0', STR_PAD_LEFT) ?>
+                    </span>
+                    <span class="bdg bg">🟢 <?= h($sol['estado']) ?></span>
+                    <?php if (($sol['prioridad'] ?? 'Normal') === 'Alta' || ($sol['prioridad'] ?? '') === 'Urgente'): ?>
+                      <span class="bdg br" style="font-size:0.62rem;">Prioridad <?= h($sol['prioridad']) ?></span>
+                    <?php endif; ?>
+                  </div>
+                  <div style="font-size:0.86rem;font-weight:600;color:var(--green);">
+                    <?= h($sol['material_nombre']) ?> — <?= number_format((float)$sol['cantidad_estimada'], 1, ',', '.') ?> kg aprox.
+                  </div>
+                  <div style="font-size:0.75rem;color:var(--muted);display:flex;gap:16px;margin-top:4px;flex-wrap:wrap;">
+                    <span>📍 <?= h($sol['localidad_nombre']) ?><?= !empty($sol['barrio']) ? ' (' . h($sol['barrio']) . ')' : '' ?></span>
+                    <span>📅 Disponibilidad: <?= date('d/m/Y', strtotime($sol['fecha_disponibilidad'])) ?></span>
+                    <span>⏰ <?= date('h:i A', strtotime($sol['hora_inicio'])) ?> - <?= date('h:i A', strtotime($sol['hora_fin'])) ?></span>
+                    <span>👤 <?= h($sol['ciudadano_nombre']) ?></span>
+                  </div>
+                </div>
+
+                <!-- Botón de Aceptar Recolección -->
+                <div style="margin-left:auto;">
+                  <form action="<?= url('reciclador/solicitud/aceptar') ?>" method="POST" style="margin:0;">
+                    <?= csrf_input() ?>
+                    <input type="hidden" name="id_solicitud" value="<?= (int)$sol['id_solicitud'] ?>">
+                    <button type="submit" class="btn btn-p" 
+                            onclick="return confirm('¿Aceptar esta recolección #<?= (int)$sol['id_solicitud'] ?>?')"
+                            style="padding:9px 16px;font-size:0.84rem;font-weight:700;border-radius:10px;background:#087A3D;">
+                      Aceptar recolección
+                    </button>
+                  </form>
+                </div>
+              </div>
+            <?php endforeach; ?>
           </div>
-        </div>
+        <?php endif; ?>
 
       </div>
 
-      <!-- ── Acceso Rápido a Centros y Beneficios ── -->
+      <!-- ── Centros de Acopio Reales de la BD ── -->
       <div class="g2">
         
         <div class="card cp">
-          <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px;">Centros de acopio cercanos</div>
+          <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px;">Centros de acopio autorizados</div>
           <p style="font-size:0.78rem;color:var(--muted);margin-bottom:14px;">
-            Entrega tus recolecciones en puntos oficiales certificados para su pesaje y validación.
+            Puntos oficiales activos para pesaje certificado y acreditación de Ecopoints.
           </p>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#FAFCFA;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">
-            <div>
-              <div style="font-weight:600;font-size:0.82rem;">EcoCentro Suba Verde</div>
-              <div style="font-size:0.72rem;color:var(--muted);">Calle 139 # 101-20 • A 2.5 km</div>
-            </div>
-            <span class="bdg bg">Abierto</span>
-          </div>
+          <?php if (!empty($centros)): ?>
+            <?php foreach (array_slice($centros, 0, 3) as $c): ?>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#FAFCFA;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">
+                <div>
+                  <div style="font-weight:600;font-size:0.82rem;color:var(--text);"><?= h($c['nombre']) ?></div>
+                  <div style="font-size:0.72rem;color:var(--muted);">📍 <?= h($c['direccion']) ?> • <?= h($c['localidad_nombre']) ?></div>
+                </div>
+                <span class="bdg bg">Abierto</span>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
 
         <div class="card cp">
           <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px;">Tus recompensas disponibles</div>
           <p style="font-size:0.78rem;color:var(--muted);margin-bottom:14px;">
-            Convierte tus <strong><?= number_format($metricas['ecopuntos'], 0, ',', '.') ?> Ecopoints</strong> en equipamiento y bonos reales.
+            Convierte tus <strong><?= number_format($metricas['ecopuntos'], 0, ',', '.') ?> Ecopoints</strong> en equipamiento y beneficios para tu labor diaria.
           </p>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#FAFCFA;border:1px solid var(--border);border-radius:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#FAFCFA;border:1px solid var(--border);border-radius:10px;">
             <div style="display:flex;align-items:center;gap:10px;">
-              <span style="font-size:1.4rem;">🦺</span>
+              <span style="font-size:1.5rem;">🦺</span>
               <div>
-                <div style="font-weight:600;font-size:0.82rem;">Kit de Protección y Seguridad</div>
+                <div style="font-weight:600;font-size:0.84rem;">Kit de Protección y Seguridad</div>
                 <div style="font-size:0.72rem;color:#087A3D;font-weight:700;">800 Ecopoints</div>
               </div>
             </div>
-            <button class="btn btn-p btn-sm" onclick="alert('Canje disponible en el módulo de Beneficios.');">Canjear</button>
+            <span class="bdg bg" style="font-size:0.72rem;">Disponible para canje</span>
           </div>
         </div>
 
@@ -229,4 +239,4 @@ require APP_PATH . 'views/layouts/sidebar.php';
     </div>
   </div>
 
-<?php require APP_PATH . 'views/layouts/footer.php'; ?>
+  <?php require APP_PATH . 'views/layouts/footer.php'; ?>
